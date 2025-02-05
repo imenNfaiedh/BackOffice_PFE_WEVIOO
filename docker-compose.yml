@@ -1,0 +1,41 @@
+#services:
+#
+#  eureka-service:
+#    build: ./eureka-service
+#    container_name: eureka-service-container
+#    ports:
+#      - '8761:8761'
+#    expose:
+#      - '8761'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+#      interval: 10s
+#      retries: 4
+#    networks:
+#      - microservices-net
+#
+#
+#  config-service:
+#    build: ./config-service
+#    container_name: config-service-container
+#    ports:
+#      - '8888:8888'
+#    expose:
+#      - '8888'
+#
+#    environment:
+#      - EUREKA_SERVICE_URL=http://eureka-service-container:8761/eureka
+#
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+#      interval: 10s
+#      retries: 4
+#    depends_on:
+#      eureka-service:
+#        condition: service_healthy
+#    networks:
+#      - microservices-net
+#
+#networks:
+#  microservices-net:
+#    driver: bridge

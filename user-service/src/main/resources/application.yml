@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: user-service
+  config:
+    import: configserver:http://localhost:8888  # Importer les configurations depuis le serveur de configuration
+
+
+server:
+  port: 8090
+
+
+
+
+
