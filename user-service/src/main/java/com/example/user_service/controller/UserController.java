@@ -18,6 +18,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+
     @PostMapping
     public void createUser(@RequestBody Map<String, String> userDetails) {
         userService.createUser(
@@ -73,5 +75,8 @@ public class UserController {
     public List<UserRepresentation> getUsersByGroupAndRole(@RequestParam String groupName, @RequestParam String roleName) {
         return userService.getUsersByGroupAndRole(groupName, roleName);
     }
+    @GetMapping("/get")
+    public String home() {
+        return "<h2>Microservice two is running</h2>";}
 
 }
