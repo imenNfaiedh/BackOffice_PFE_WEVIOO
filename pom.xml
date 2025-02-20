@@ -59,6 +59,9 @@
 		<module> user-service</module>
 		<module> kafka-service</module>
 
+		<module> transaction-service</module>
+
+
 
 
 
