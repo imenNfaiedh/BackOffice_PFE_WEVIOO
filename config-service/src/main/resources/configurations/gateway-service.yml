@@ -1,57 +1,74 @@
-#########config keycloak############
-keycloak-client:
-  server-url: http://localhost:8080
-  realm:  spring-micro-main
+# Configuration générale du Gateway
 
 spring:
+  # Configuration Keycloak pour OAuth2
   security:
     oauth2:
       resource-server:
         jwt:
           jwk-set-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/certs
-#########       ############
-eureka:
-  client:
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    filter:
+      disable: true # Désactive temporairement la sécurité (à utiliser uniquement en développement)
 
   cloud:
     gateway:
       globalcors:
         corsConfigurations:
-          '[/**]':
+          '[/**]': # Configuration CORS globale
             allowedOrigins: "http://localhost:4200"
             allowedMethods:
               - PUT
               - GET
               - POST
               - DELETE
-            AllowedHeaders:
+            allowedHeaders:
               - Content-Type
+
       discovery:
         locator:
-          enabled: true
-      routes: # Ajoute tes routes ici
+          enabled: true # Activer la découverte automatique des services via Eureka
+
+      routes: # Définition des routes
         - id: user-service
           uri: http://localhost:8090
           predicates:
             - Path=/users/**
 
+        - id: transaction-service
+          uri: http://localhost:8087
+          predicates:
+            - Path=/users/**, /accounts/**, /cards/**, /banks/**, /transactions/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS
 
-  logging:
-    level:
-      org.springframework.cloud.gateway: DEBUG
+# Configuration Eureka
+eureka:
+  client:
+    register-with-eureka: true # Enregistrer ce service auprès d'Eureka
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # URL de Eureka
 
-  application:
-    name : gateway-service
-
+# Configuration du serveur
 server:
-  port: 8085
+  port: 8085 # Port d'écoute du Gateway
+
+# Configuration des logs
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG # Activer les logs détaillés pour le Gateway
+
+# Configuration du monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "*" # Exposer tous les endpoints de management
 
+# Configuration Keycloak (variables externes)
+keycloak-client:
+  server-url: http://localhost:8080 # URL de Keycloak
+  realm: spring-micro-main # Realm utilisé dans Keycloak
 
+# Nom de l'application
+
+  application:
+    name: gateway-service
