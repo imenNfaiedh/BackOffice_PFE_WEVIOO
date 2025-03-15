@@ -46,7 +46,6 @@
 		<module> config-service</module>
 		<module> user-service</module>
 		<module> kafka-service</module>
-
 		<module> Fraud-Detection-service</module>
 
 

@@ -8,12 +8,12 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaTopicConfig {
     @Bean
-    //Cette méthode retourne un objet NewTopic qui représente un topic Kafka nommé "topicNum1".
+
     public NewTopic firstTopic() {
         return TopicBuilder
                 .name("topicNum1")
                 .partitions(5)
-                .replicas(3) // Réplique chaque partition sur 3 broker
+                .replicas(3) //
                 .build();
 
     }}

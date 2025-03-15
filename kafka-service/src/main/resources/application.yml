@@ -3,6 +3,8 @@ server:
   port: 8033
 spring:
   kafka:
+
+
     consumer:
       bootstrap-servers: localhost:9092
       group-id: myGrp
