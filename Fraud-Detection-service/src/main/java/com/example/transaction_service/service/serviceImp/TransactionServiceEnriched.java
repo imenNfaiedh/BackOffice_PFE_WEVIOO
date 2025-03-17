@@ -21,7 +21,7 @@ public class TransactionServiceEnriched {
     @Autowired
     private KafkaTemplate<String, TransactionEnrichedDto> kafkaTemplate;
 
-    private final String TOPIC = "transaction-enriched";
+    private final String TOPIC = "enriched-transactions";
 
     public TransactionEnrichedDto enrichTransaction(Long transactionId) {
 
