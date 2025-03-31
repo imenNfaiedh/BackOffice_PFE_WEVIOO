@@ -1,4 +1,4 @@
-# Configuration générale du Gateway
+
 
 spring:
   # Configuration Keycloak pour OAuth2
@@ -7,14 +7,13 @@ spring:
       resource-server:
         jwt:
           jwk-set-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/certs
-    filter:
-      disable: true # Désactive temporairement la sécurité (à utiliser uniquement en développement)
+
 
   cloud:
     gateway:
       globalcors:
         corsConfigurations:
-          '[/**]': # Configuration CORS globale
+          '[/**]':
             allowedOrigins: "http://localhost:4200"
             allowedMethods:
               - PUT
@@ -23,16 +22,18 @@ spring:
               - DELETE
             allowedHeaders:
               - Content-Type
+              - Authorization
 
       discovery:
         locator:
-          enabled: true # Activer la découverte automatique des services via Eureka
+          enabled: true
 
-      routes: # Définition des routes
+      routes:
         - id: user-service
           uri: http://localhost:8090
           predicates:
             - Path=/users/**
+            - Method=GET,POST,PUT,DELETE,OPTIONS
 
         - id: transaction-service
           uri: http://localhost:8087
@@ -43,30 +44,30 @@ spring:
 # Configuration Eureka
 eureka:
   client:
-    register-with-eureka: true # Enregistrer ce service auprès d'Eureka
+    register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/ # URL de Eureka
+      defaultZone: http://localhost:8761/eureka/
 
 # Configuration du serveur
 server:
-  port: 8085 # Port d'écoute du Gateway
+  port: 8085
 
 # Configuration des logs
 logging:
   level:
-    org.springframework.cloud.gateway: DEBUG # Activer les logs détaillés pour le Gateway
+    org.springframework.cloud.gateway: INFO
 
 # Configuration du monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: "*" # Exposer tous les endpoints de management
+        include: "*"
 
 # Configuration Keycloak (variables externes)
 keycloak-client:
-  server-url: http://localhost:8080 # URL de Keycloak
-  realm: spring-micro-main # Realm utilisé dans Keycloak
+  server-url: http://localhost:8080
+  realm: spring-micro-main
 
 # Nom de l'application
 

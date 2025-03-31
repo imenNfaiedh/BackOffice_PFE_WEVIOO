@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private Keycloak keycloak; //injecte une instance de Keycloak pour interagir avec le serveur Keycloak.
+    private Keycloak keycloak; //Inject a Keycloak instance to interact with the Keycloak server
 
     private final String realm = "spring-micro-main";
 
@@ -35,19 +35,19 @@ public class UserService {
         user.setLastName(lastName);
         user.setEnabled(true);
 
-       //Un objet CredentialRepresentation est utilisé pour stocker les informations d'identification
+       //A CredentialRepresentation object is used to store credentials
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
         credential.setValue(password);
         credential.setTemporary(false);
-        // Ajouter les credentials à l'utilisateur
+        //Add credentials to the user
         user.setCredentials(Collections.singletonList(credential));
 
-        //Création de l'utilisateur dans Keycloak
+        //Create user
         Response response = keycloak.realm(realm).users().create(user);
         System.out.println("jjj");
 
-        //Récupération de l'ID de l'utilisateur créé
+        //
         String locationHeader = response.getHeaderString("Location");
         String userId = locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
 
