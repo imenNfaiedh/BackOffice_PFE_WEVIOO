@@ -23,6 +23,7 @@ spring:
             allowedHeaders:
               - Content-Type
               - Authorization
+            allowCredentials: true
 
       discovery:
         locator:
@@ -38,7 +39,7 @@ spring:
         - id: transaction-service
           uri: http://localhost:8087
           predicates:
-            - Path=/users/**, /accounts/**, /cards/**, /banks/**, /transactions/**
+#            - Path=/users/**, /accounts/**, /cards/**, /banks/**, /transactions/**
             - Method=GET,POST,PUT,DELETE,OPTIONS
 
 # Configuration Eureka

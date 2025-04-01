@@ -7,10 +7,13 @@ import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.entity.User;
 
 import com.example.transaction_service.repository.ITransactionRepository;
+import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -18,8 +21,8 @@ public class TransactionServiceEnriched {
     @Autowired
     private ITransactionRepository transactionRepository;
 
-    @Autowired
-    private KafkaTemplate<String, TransactionEnrichedDto> kafkaTemplate;
+     @Autowired
+     KafkaProducer kafkaProducer;
 
     private final String TOPIC = "enriched-transactions";
 
@@ -54,7 +57,9 @@ public class TransactionServiceEnriched {
         enrichedDto.setOpeningDate(bankAccount.getOpeningDate());
         enrichedDto.setBalance(bankAccount.getBalance());
         enrichedDto.setTypeBankAccount(bankAccount.getTypeBankAccount());
-
+        if(Objects.isNull(user)){
+            throw  new NotFoundException(" user not found");
+        }
         enrichedDto.setUserId(user.getUserId());
         enrichedDto.setFirstName(user.getFirstName());
         enrichedDto.setLastName(user.getLastName());
@@ -64,7 +69,7 @@ public class TransactionServiceEnriched {
         enrichedDto.setRole(user.getRole());
 
         // Envoi de la transaction enrichie à Kafka
-        kafkaTemplate.send(TOPIC, enrichedDto);
+        kafkaProducer.sendMessage("hello");
         log.info("Transaction enrichie envoyée à Kafka : {}", enrichedDto);
 
 

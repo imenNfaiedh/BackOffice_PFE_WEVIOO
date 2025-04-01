@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 
+
 public class KeycloakConfig {
     //c est le meme pour l obtenir du token admmin en postman
     private static final Logger logger = LoggerFactory.getLogger(KeycloakConfig.class);

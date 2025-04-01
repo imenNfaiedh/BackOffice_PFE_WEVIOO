@@ -22,7 +22,6 @@ import java.util.Collections;
 public class KeycloakSecurityconfig {
 
 
-
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
@@ -37,6 +36,4 @@ public class KeycloakSecurityconfig {
 
         return http.build();
     }
-
-
 }

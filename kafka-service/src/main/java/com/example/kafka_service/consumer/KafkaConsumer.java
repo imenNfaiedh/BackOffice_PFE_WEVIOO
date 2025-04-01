@@ -14,16 +14,8 @@ import static java.lang.String.format;
 //@Slf4j
 public class KafkaConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
-
-//    // @KafkaListener(topics = "topicNum1", groupId = "myGrp")
-//    public void consumeMsg(String msg) {
-//
-//         log.info(format("Consuming the message from topicNum1 Topic:: %s", msg));
-//    }
-
-    @KafkaListener(topics = "topicNum1", groupId = "myGrp")
-    public void consumeJsonMsg(Student student) {
-        log.info(format("Consuming the message from  Topic:: %s", student.toString()));
+    @KafkaListener(topics = "any-topic-name", groupId = "myGrp")
+    public void consumeMessage(String message) {
+        System.out.println("Received message: " + message);
     }
 }
