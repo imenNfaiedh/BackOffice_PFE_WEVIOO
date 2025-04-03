@@ -5,15 +5,13 @@ import com.example.transaction_service.dto.TransactionEnrichedDto;
 import com.example.transaction_service.entity.BankAccount;
 import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.entity.User;
-
+import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.repository.ITransactionRepository;
-import jakarta.ws.rs.NotFoundException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -29,7 +27,7 @@ public class TransactionServiceEnriched {
     public TransactionEnrichedDto enrichTransaction(Long transactionId) {
 
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new NotFoundException("Transaction not found"));
 
 
         BankAccount bankAccount = transaction.getBankAccount();
@@ -37,11 +35,18 @@ public class TransactionServiceEnriched {
             Long bankAccountId = bankAccount.getBankAccountId();
             log.info("ID du compte bancaire : " + bankAccountId);
         } else {
-            throw new RuntimeException("Le compte bancaire est null dans la transaction.");
+            throw new NotFoundException("Le compte bancaire est null dans la transaction.");
         }
 
 
         User user = bankAccount.getUser();
+        if (user!=null){
+            Long userId = user.getUserId();
+            log.info("id user :" +userId);
+        }
+        else {
+            throw new NotFoundException("user est null dans la transaction.");
+        }
         // Créer un DTO enrichi
         TransactionEnrichedDto enrichedDto = new TransactionEnrichedDto();
         enrichedDto.setTransactionId(transaction.getTransactionId());
@@ -57,9 +62,8 @@ public class TransactionServiceEnriched {
         enrichedDto.setOpeningDate(bankAccount.getOpeningDate());
         enrichedDto.setBalance(bankAccount.getBalance());
         enrichedDto.setTypeBankAccount(bankAccount.getTypeBankAccount());
-        if(Objects.isNull(user)){
-            throw  new NotFoundException(" user not found");
-        }
+
+
         enrichedDto.setUserId(user.getUserId());
         enrichedDto.setFirstName(user.getFirstName());
         enrichedDto.setLastName(user.getLastName());

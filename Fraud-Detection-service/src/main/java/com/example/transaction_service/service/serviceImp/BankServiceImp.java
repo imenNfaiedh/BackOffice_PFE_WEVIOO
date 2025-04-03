@@ -55,8 +55,6 @@ public class BankServiceImp implements IBankService {
 
         Bank bank = bankOptional.get();
         bank.setBankName(bankDto.getBankName());
-
-
         return bankMapper.toDto(bankRepository.save(bank));
 
     }
