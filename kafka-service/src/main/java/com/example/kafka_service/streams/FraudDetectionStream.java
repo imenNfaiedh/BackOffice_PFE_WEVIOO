@@ -1,6 +1,7 @@
 package com.example.kafka_service.streams;
 
 
+import com.example.kafka_service.dto.FraudAlertDto;
 import com.example.kafka_service.dto.TransactionEnrichedDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ import java.util.Properties;
 @Service
 @Slf4j
 public class FraudDetectionStream {
+
     private static final String INPUT_TOPIC = "enriched-transactions";
     private static final String OUTPUT_TOPIC = "suspicious-users";
 
@@ -36,15 +38,15 @@ public class FraudDetectionStream {
     public void startStreamProcessing() {
         StreamsBuilder builder = new StreamsBuilder();
 
-        // Consommer les données en tant que String
+        // 1. Lire les messages JSON sous forme de String
         KStream<String, String> rawStream = builder.stream(INPUT_TOPIC, Consumed.with(Serdes.String(), Serdes.String()));
 
-        // Désérialisation  des données en String
+        // 2. Désérialiser le JSON en DTO
         KStream<String, TransactionEnrichedDto> parsedStream = rawStream
                 .mapValues(value -> {
                     try {
                         ObjectMapper objectMapper = new ObjectMapper();
-                        return objectMapper.readValue(value, TransactionEnrichedDto.class); // Désérialisation en DTO
+                        return objectMapper.readValue(value, TransactionEnrichedDto.class);
                     } catch (JsonProcessingException e) {
                         log.error("Erreur de désérialisation de la transaction", e);
                         return null;
@@ -53,43 +55,56 @@ public class FraudDetectionStream {
                 .filter((key, value) -> value != null)
                 .selectKey((key, value) -> value.getUserId().toString());
 
-
-        // Regroupement par userId
+        // 3. Grouper par userId
         KGroupedStream<String, TransactionEnrichedDto> groupedByUser = parsedStream
                 .groupByKey(Grouped.with(Serdes.String(), new JsonSerde<>(TransactionEnrichedDto.class)));
 
-        // Fenêtre glissante d'une heure
+        // 4. Fenêtrage glissant
         TimeWindows timeWindow = TimeWindows.of(Duration.ofHours(1)).advanceBy(Duration.ofMinutes(15));
+
+        // 5. Agrégation du montant des transactions
         KTable<Windowed<String>, Double> windowedTransactions = groupedByUser
                 .windowedBy(timeWindow)
                 .aggregate(
                         () -> 0.0,
-                        (key, transaction, aggregate) -> aggregate + transaction.getAmount(), // Accès au montant de la transaction
+                        (key, transaction, aggregate) -> aggregate + transaction.getAmount(),
                         Materialized.<String, Double, WindowStore<Bytes, byte[]>>as("user-transaction-aggregates")
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(Serdes.Double())
                 );
 
-        // Filtrer les utilisateurs suspects
+        // 6. Filtrer les utilisateurs suspects (montant > 30 000)
         KStream<String, Double> suspiciousUsers = windowedTransactions
                 .toStream()
                 .filter((windowedKey, totalAmount) -> totalAmount > 30000)
                 .map((windowedKey, totalAmount) -> KeyValue.pair(windowedKey.key(), totalAmount));
 
-        // Produire des alertes sous forme de String (au lieu de JSON)
-        suspiciousUsers.to(OUTPUT_TOPIC, Produced.with(Serdes.String(), Serdes.Double()));
+        // 7. Transformer en DTO d'alerte
+        KStream<String, FraudAlertDto> alertsStream = suspiciousUsers.mapValues((userId, amount) -> {
+            FraudAlertDto alert = new FraudAlertDto();
+            alert.setUserId(Long.parseLong(userId));
+            alert.setAmount(amount);
+            alert.setTimestamp(System.currentTimeMillis()); // Timestamp actuel
+            alert.setSuspiciousActivity(true); // Puisqu'on a dépassé le seuil
+            return alert;
+        });
 
-        // Lancer le stream
+        // 8. Écrire dans le topic "suspicious-users"
+        alertsStream.to(OUTPUT_TOPIC, Produced.with(Serdes.String(), new JsonSerde<>(FraudAlertDto.class)));
+
+        // 9. Config et démarrage
         KafkaStreams streams = new KafkaStreams(builder.build(), getStreamsConfig());
         streams.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
 
     private Properties getStreamsConfig() {
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "fraud-detection-processor");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass()); // Utilisation du String Serde
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         return props;
     }
 }
