@@ -7,6 +7,12 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   kafka:
+    streams:
+      application-id: fraud-detection-processor
+      bootstrap-servers: localhost:9092
+      default:
+        key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        value-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
     consumer:
       bootstrap-servers: localhost:9092
       group-id: myGrp

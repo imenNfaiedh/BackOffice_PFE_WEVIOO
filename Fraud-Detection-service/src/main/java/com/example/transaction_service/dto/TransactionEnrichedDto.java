@@ -4,6 +4,7 @@ import com.example.transaction_service.enumeration.TransactionStatus;
 import com.example.transaction_service.enumeration.TypeBankAccount;
 import com.example.transaction_service.enumeration.TypeTransaction;
 import com.example.transaction_service.enumeration.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class TransactionEnrichedDto implements Serializable {
 
     private Long bankAccountId;
     private Long accountNumber;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date openingDate;
     private double balance;
     @Enumerated(EnumType.STRING)

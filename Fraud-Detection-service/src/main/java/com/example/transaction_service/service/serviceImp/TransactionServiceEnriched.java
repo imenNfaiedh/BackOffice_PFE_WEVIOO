@@ -73,7 +73,7 @@ public class TransactionServiceEnriched {
         enrichedDto.setRole(user.getRole());
 
         // Envoi de la transaction enrichie à Kafka
-//        kafkaProducer.sendMessage("hello");
+
         kafkaProducer.sendTransaction( enrichedDto);
         log.info("Transaction enrichie envoyée à Kafka : {}", enrichedDto);
 
