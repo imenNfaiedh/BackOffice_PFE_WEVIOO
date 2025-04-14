@@ -23,7 +23,7 @@ public class KeycloakConfig {
                     .serverUrl("http://localhost:8080")
                     .realm("master")
                     .clientId("admin-cli")
-                    .clientSecret("jwpk9VN2Z8Al4vutOJYuR1x4ADJiQmPm")
+                    .clientSecret("bqFzWHVxLOhuv09IsY7v1eWJeJLmyQwB")
                     .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                     .build();
         } catch (Exception e) {

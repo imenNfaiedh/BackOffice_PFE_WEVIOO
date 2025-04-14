@@ -17,27 +17,20 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Disable CSRF if not needed
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Define public endpoints
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/users/**").permitAll() // Public endpoint
-
-                                .anyRequest().authenticated() // All other endpoints require authentication
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/users/**").permitAll() // accessible sans authentification
+                        .anyRequest().authenticated()
                 )
 
-                // Additional configuration like form login or OAuth2 can go here
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults()) // éventuellement laisser ça pour les tests avec Postman
+                .formLogin(AbstractHttpConfigurer::disable); //  désactive le login HTML
 
         return http.build();
     }
-
-
-
 }

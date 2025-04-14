@@ -42,8 +42,6 @@ public class UserController {
     }
 
 
-
-
     @GetMapping("/{id}")
     public UserDetailsWithGroupsAndRoles getUser(@PathVariable String id) {
         return userService.getUserDetailsWithGroupsAndRoles(id);
