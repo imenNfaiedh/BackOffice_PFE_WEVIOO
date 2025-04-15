@@ -5,6 +5,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -22,15 +23,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/users/**").permitAll() // accessible sans authentification
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/**").permitAll()
                         .anyRequest().authenticated()
-                )
-
-                .httpBasic(Customizer.withDefaults()) // éventuellement laisser ça pour les tests avec Postman
-                .formLogin(AbstractHttpConfigurer::disable); //  désactive le login HTML
+                );
 
         return http.build();
     }
+
+
 }

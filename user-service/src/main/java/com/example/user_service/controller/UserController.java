@@ -3,6 +3,7 @@ package com.example.user_service.controller;
 
 import com.example.user_service.models.UserDetailsWithGroupsAndRoles;
 import com.example.user_service.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -22,6 +24,7 @@ public class UserController {
 
     @PostMapping
     public void createUser(@RequestBody Map<String, String> userDetails) {
+        log.info("*** zrngzeongzignjz");
         userService.createUser(
                 userDetails.get("username"),
                 userDetails.get("email"),
@@ -29,8 +32,6 @@ public class UserController {
                 userDetails.get("lastName"),
                 userDetails.get("password"),
                 userDetails.get("roleName")
-
-
         );
     }
 

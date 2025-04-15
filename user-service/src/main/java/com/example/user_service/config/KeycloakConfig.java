@@ -20,10 +20,17 @@ public class KeycloakConfig {
     public Keycloak keycloak() {
         try {
             return KeycloakBuilder.builder()
+//                    .serverUrl("http://localhost:8080")
+//                    .realm("master")
+//                    .username("admin") // utilisateur avec rôle realm-admin
+//                    .password("admin") // mot de passe
+//                    .clientId("admin-cli")
+//                    .grantType(OAuth2Constants.PASSWORD)
+//                    .build();
                     .serverUrl("http://localhost:8080")
                     .realm("master")
                     .clientId("admin-cli")
-                    .clientSecret("bqFzWHVxLOhuv09IsY7v1eWJeJLmyQwB")
+                    .clientSecret("tsLZUvSc30GmjZhaHsh7glUTpqSCrtSp")
                     .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                     .build();
         } catch (Exception e) {

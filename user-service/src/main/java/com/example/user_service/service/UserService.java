@@ -1,6 +1,7 @@
 package com.example.user_service.service;
 
 import com.example.user_service.models.UserDetailsWithGroupsAndRoles;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -28,6 +29,7 @@ public class UserService {
     public void createUser(String username, String email, String firstName, String lastName, String password
             , String roleName) {
 
+        log.info("*** SERVICE START");
         UserRepresentation user = new UserRepresentation();
         user.setUsername(username);
         user.setEmail(email);
@@ -44,6 +46,7 @@ public class UserService {
         user.setCredentials(Collections.singletonList(credential));
 
         //Create user
+
         Response response = keycloak.realm(realm).users().create(user);
         System.out.println("jjj");
 
