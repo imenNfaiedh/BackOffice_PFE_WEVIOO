@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+
 @Setter
 @Getter
 @Table(name = "FDS005T_USER")
@@ -20,8 +20,6 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    @Column(name = "FDS005_KEYCLOAK_ID")
-    private String keycloakId;
 
     @Column(name = "FDS005_USER_ID")
     private Long userId;
@@ -33,6 +31,9 @@ public class User implements Serializable {
     private String email;
     @Column(name = "FDS005_TEL")
     private String tel;
+    @Column(name = "FDS005_KEYCLOAK_ID")
+    private String keycloakId;
+
     @Column(name = "FDS005_SUSPICIOUS_ACTIVITY")
     private Boolean suspicious_activity;
 
