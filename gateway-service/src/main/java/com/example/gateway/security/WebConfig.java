@@ -7,25 +7,13 @@ import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
 public class WebConfig {
-
-
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//                .allowedOrigins("http://localhost:4200") // L'origine autorisée (l'adresse de votre front-end Angular)
-//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                .allowedHeaders("*")
-//                .allowCredentials(true);
-//
-//    }}
-
-
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -38,5 +26,3 @@ public class WebConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }}
-
-

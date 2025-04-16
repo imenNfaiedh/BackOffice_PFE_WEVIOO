@@ -20,11 +20,8 @@ spring:
               - GET
               - POST
               - DELETE
-            allowedHeaders:
+            AllowedHeaders:
               - Content-Type
-              - Authorization
-            allowCredentials: true
-
       discovery:
         locator:
           enabled: true
@@ -33,13 +30,14 @@ spring:
         - id: user-service
           uri: http://localhost:8090
           predicates:
-            - Path=/users/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
+              - Path=/users/**
+              - Method=GET,POST,PUT,DELETE,OPTIONS
+
 
         - id: transaction-service
           uri: http://localhost:8087
           predicates:
-#            - Path=/users/**, /accounts/**, /cards/**, /banks/**, /transactions/**
+            - Path=/users/**, /accounts/**, /cards/**, /banks/**, /transactions/**
             - Method=GET,POST,PUT,DELETE,OPTIONS
 
 # Configuration Eureka

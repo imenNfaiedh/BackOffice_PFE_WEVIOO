@@ -20,6 +20,9 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column(name = "FDS005_KEYCLOAK_ID")
+    private String keycloakId;
+
     @Column(name = "FDS005_USER_ID")
     private Long userId;
     @Column(name = "FDS005_FIRST_NAME")
