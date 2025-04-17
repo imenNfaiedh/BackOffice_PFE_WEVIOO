@@ -89,6 +89,8 @@ public class UserServiceImpl implements IUserService {
         String email = jwt.getClaimAsString("email");
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
+        String setSuspicious_activity = jwt.getClaimAsString("suspicious_activity");
+        String tel = jwt.getClaimAsString("phone number");
 
         // Récupérer les rôles de l'utilisateur à partir du token
         List<String> roles = jwt.getClaim("realm_access") != null
@@ -98,12 +100,16 @@ public class UserServiceImpl implements IUserService {
         // Chercher l'utilisateur dans la base de données
         return userRepository.findByKeycloakId(keycloakId)
                 .orElseGet(() -> {
-                    // Si l'utilisateur n'existe pas, on le crée
-                    UserRole userRole = UserRole.CUSTOMER; // Valeur par défaut
-                    if (roles.contains("ADMINISTRATEUR")) {
-                        userRole = UserRole.ADMIN;
-                    } else if (roles.contains("CHEF_AGENT")) {
-                        userRole = UserRole.MANAGER;
+
+                    UserRole userRole = UserRole.CUSTOMER; // rôle par défaut
+
+                    for (String role : roles) {
+                        try {
+                            log.info("Roles in token: {}", roles);
+                            userRole = UserRole.valueOf(role);
+                            break;
+                        } catch (IllegalArgumentException ignored) {
+                        }
                     }
 
                     // Créer un nouvel utilisateur
@@ -113,8 +119,8 @@ public class UserServiceImpl implements IUserService {
                     user.setFirstName(firstName);
                     user.setLastName(lastName);
                     user.setRole(userRole);
-                    user.setTel("");
-                    user.setSuspicious_activity(false);
+                    user.setTel(tel);
+                    user.setSuspicious_activity(Boolean.valueOf(setSuspicious_activity));
                     log.info("Saving user: {}", user);
                     // Sauvegarder dans la base de données
                     return userRepository.save(user);
