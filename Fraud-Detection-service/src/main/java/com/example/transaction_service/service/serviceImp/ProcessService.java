@@ -36,7 +36,7 @@ public class ProcessService {
             Double amount = (Double) data.get("fds004_amount");
 
             Transaction transaction = transactionRepository.findById(transactionId)
-                    .orElseThrow(() -> new NotFoundException("Transaction not found"));
+                    .orElseThrow(() -> new NotFoundException("Transaction not found" +transactionId));
 
             User user = transaction.getBankAccount().getUser();
             Long userId = user.getUserId();
@@ -44,37 +44,36 @@ public class ProcessService {
             boolean isFraudulent = false;
             List<String> reasons = new ArrayList<>();
 
-            // Règle 1 : montant > 3000
-            if (amount > 3000) {
+            if (isHighAmount(amount, reasons)) {
                 isFraudulent = true;
-                reasons.add("Montant supérieur à 3000");
             }
 
-            // Règle 2 : transactions dans plusieurs pays en moins de 10 minutes
+            //  Période à analyser : les 10 dernières minutes
             Date tenMinutesAgo = new Date(System.currentTimeMillis() - 10 * 60 * 1000);
             List<Transaction> recentTransactions = transactionRepository
                     .findByBankAccount_User_UserIdAndTransactionDateAfter(userId, tenMinutesAgo);
 
-            Set<String> countries = recentTransactions.stream()
-                    .map(Transaction::getCountry)
-                    .collect(Collectors.toSet());
-
-            if (countries.size() > 1) {
+            //  Règle 2 : Haute fréquence de transactions
+            if (isHighFrequency(recentTransactions, reasons)) {
                 isFraudulent = true;
-                reasons.add("Transactions dans plusieurs pays sur une courte période");
             }
 
-            // Si aucune règle n'est déclenchée, pas besoin d'envoyer
+            //  Règle 3 : Transactions dans plusieurs pays
+            if (isMultipleCountries(recentTransactions, reasons)) {
+                isFraudulent = true;
+            }
+
+
             if (!isFraudulent) {
-                log.info("Transaction non frauduleuse, pas d'envoi dans Kafka.");
+                log.info("Aucune fraude détectée pour cette transaction.");
                 return;
             }
 
-            // Marquer l'utilisateur comme suspect
+            // ⚠ Mise à jour du statut utilisateur
             user.setSuspicious_activity(true);
             userRepository.save(user);
 
-            // Construire le map utilisateur
+            //  Construction de l'objet à envoyer dans Kafka
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("userId", user.getUserId());
             userMap.put("firstName", user.getFirstName());
@@ -83,19 +82,52 @@ public class ProcessService {
             userMap.put("tel", user.getTel());
             userMap.put("suspiciousActivity", user.getSuspicious_activity());
 
-            // Construire le résultat à envoyer
             Map<String, Object> fraudResult = new HashMap<>();
             fraudResult.put("transactionId", transaction.getTransactionId());
             fraudResult.put("amount", transaction.getAmount());
             fraudResult.put("country", transaction.getCountry());
             fraudResult.put("user", userMap);
-            fraudResult.put("reason", String.join(" & ", reasons)); // On concatène les raisons
+            fraudResult.put("reason", String.join(" & ", reasons));
 
-            // Convertir en JSON et envoyer via Kafka
+
             String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
             kafkaProducer.sendFraudDetectionResult(fraudResultJson);
 
+            log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
+
         } catch (Exception e) {
-            log.error("Erreur lors du traitement des données : ", e);
+            log.error("Erreur dans le processus de détection de fraude : ", e);
         }
-    }}
+    }
+
+    // Règle 1
+    private boolean isHighAmount(Double amount, List<String> reasons) {
+        if (amount != null && amount > 3000) {
+            reasons.add("Montant supérieur à 3000");
+            return true;
+        }
+        return false;
+    }
+
+    //  Règle 2
+    private boolean isHighFrequency(List<Transaction> recentTransactions, List<String> reasons) {
+        if (recentTransactions.size() > 5) {
+            reasons.add("Trop de transactions en moins de 10 minutes");
+            return true;
+        }
+        return false;
+    }
+
+    // Règle 3
+    private boolean isMultipleCountries(List<Transaction> recentTransactions, List<String> reasons) {
+        Set<String> countries = recentTransactions.stream()
+                .map(Transaction::getCountry)
+                .collect(Collectors.toSet());
+
+        if (countries.size() > 1) {
+            reasons.add("Transactions dans plusieurs pays sur une courte période");
+            return true;
+        }
+        return false;
+    }
+}
