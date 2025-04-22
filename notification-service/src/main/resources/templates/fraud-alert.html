@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Alerte de Fraude</title>
+</head>
+<body>
+<h2>Bonjour <span th:text="${firstName}">Client</span>,</h2>
+<p>Une activité suspecte a été détectée sur votre compte :</p>
+<ul>
+    <li><strong>Montant :</strong> <span th:text="${amount}">0.00</span> €</li>
+    <li><strong>Pays :</strong> <span th:text="${country}">Pays inconnu</span></li>
+    <li><strong>Raison :</strong> <span th:text="${reason}">Raison inconnue</span></li>
+</ul>
+<p>Veuillez vérifier cette activité ou contacter notre service client.</p>
+<p>Ceci est un message automatique.</p>
+</body>
+</html>

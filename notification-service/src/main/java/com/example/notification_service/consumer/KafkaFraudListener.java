@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @Component
 public class KafkaFraudListener {
@@ -29,27 +32,24 @@ public class KafkaFraudListener {
             String country = jsonNode.path("country").asText();
             String reason = jsonNode.path("reason").asText();
 
-            String subject = "🚨 Fraude détectée sur votre compte";
-            String body = "Bonjour " + firstName + ",\n\n" +
-                    "Une activité suspecte a été détectée sur votre compte bancaire.\n" +
-                    "Voici les détails :\n\n" +
-                    "Montant : " + amount + " €\n" +
-                    "Pays : " + country + "\n" +
-                    "Raison : " + reason + "\n\n" +
-                    "Merci de vérifier cette activité ou contacter notre service client.\n\n" +
-                    "Ceci est un message automatique.";
 
             EmailDetails emailDetails = new EmailDetails();
             emailDetails.setRecipient(email);
-            emailDetails.setSubject(subject);
-            emailDetails.setMsgBody(body);
+            emailDetails.setSubject("🚨 Alerte de fraude détectée");
 
-            String result = emailService.sendSimpleMail(emailDetails);
-            log.info("Résultat de l'envoi d'email : {}", result);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("firstName", firstName);
+            model.put("amount", amount);
+            model.put("country", country);
+            model.put("reason", reason);
+
+            // Envoi de l'e-mail HTML
+            String result = emailService.sendHtmlMailWithTemplate(emailDetails, model);
+            log.info("📬 Résultat de l'envoi de l'e-mail : {}", result);
 
         } catch (Exception e) {
-            log.error("Erreur lors du traitement du message Kafka pour l'email : ", e);
+            log.error(" Erreur lors du traitement du message Kafka pour l'envoi de l'e-mail", e);
         }
     }
 }
-
