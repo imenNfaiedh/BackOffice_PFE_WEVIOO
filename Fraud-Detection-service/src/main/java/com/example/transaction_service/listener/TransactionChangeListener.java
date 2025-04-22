@@ -15,8 +15,6 @@ import java.util.Map;
 @Component
 public class TransactionChangeListener {
 
-
-
     @Autowired
     private ProcessService processService;
 
@@ -27,7 +25,6 @@ public class TransactionChangeListener {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             JsonNode json = mapper.readTree(message);
 
             // Extraire les données après la modification

@@ -1,14 +1,12 @@
 package com.example.transaction_service.service.serviceImp;
 
-import com.example.transaction_service.dto.TransactionEnrichedDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+
 
 @Service
 @Slf4j

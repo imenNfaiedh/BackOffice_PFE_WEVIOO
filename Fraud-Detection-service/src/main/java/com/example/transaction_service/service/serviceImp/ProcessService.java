@@ -92,7 +92,6 @@ public class ProcessService {
 
             String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
             kafkaProducer.sendFraudDetectionResult(fraudResultJson);
-
             log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
 
         } catch (Exception e) {
