@@ -53,12 +53,12 @@ public class ProcessService {
             List<Transaction> recentTransactions = transactionRepository
                     .findByBankAccount_User_UserIdAndTransactionDateAfter(userId, tenMinutesAgo);
 
-            //  Règle 2 : Haute fréquence de transactions
+            //  Règle 2
             if (isHighFrequency(recentTransactions, reasons)) {
                 isFraudulent = true;
             }
 
-            //  Règle 3 : Transactions dans plusieurs pays
+            //  Règle 3
             if (isMultipleCountries(recentTransactions, reasons)) {
                 isFraudulent = true;
             }
@@ -69,11 +69,11 @@ public class ProcessService {
                 return;
             }
 
-            // ⚠ Mise à jour du statut utilisateur
+
             user.setSuspicious_activity(true);
             userRepository.save(user);
 
-            //  Construction de l'objet à envoyer dans Kafka
+
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("userId", user.getUserId());
             userMap.put("firstName", user.getFirstName());

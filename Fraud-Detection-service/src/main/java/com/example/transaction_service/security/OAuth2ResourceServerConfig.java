@@ -23,6 +23,7 @@ public class OAuth2ResourceServerConfig {
             "/accounts",
             "/transactions",
             "/users",
+            "/users/me"
 
     };
     @Bean
