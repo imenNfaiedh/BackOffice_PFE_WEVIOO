@@ -1,17 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
+    <meta charset="UTF-8">
     <title>Alerte de Fraude</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h2 {
+            color: #d32f2f;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px 0;
+        }
+
+        strong {
+            color: #555;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
-<h2>Bonjour <span th:text="${firstName}">Client</span>,</h2>
-<p>Une activité suspecte a été détectée sur votre compte :</p>
-<ul>
-    <li><strong>Montant :</strong> <span th:text="${amount}">0.00</span> €</li>
-    <li><strong>Pays :</strong> <span th:text="${country}">Pays inconnu</span></li>
-    <li><strong>Raison :</strong> <span th:text="${reason}">Raison inconnue</span></li>
-</ul>
-<p>Veuillez vérifier cette activité ou contacter notre service client.</p>
-<p>Ceci est un message automatique.</p>
+<div class="container">
+    <h2>Bonjour <span th:text="${firstName}">Client</span>,</h2>
+    <p>🚨 Une activité suspecte a été détectée sur votre compte :</p>
+    <ul>
+        <li><strong>💸 Montant :</strong> <span th:text="${amount}">0.00</span> €</li>
+        <li><strong>🌍 Pays :</strong> <span th:text="${country}">Pays inconnu</span></li>
+        <li><strong>❗ Raison :</strong> <span th:text="${reason}">Raison inconnue</span></li>
+    </ul>
+    <p>Merci de vérifier cette activité ou de contacter notre service client.</p>
+    <p class="footer">Ceci est un message automatique. Ne pas répondre à cet e-mail.</p>
+</div>
 </body>
 </html>

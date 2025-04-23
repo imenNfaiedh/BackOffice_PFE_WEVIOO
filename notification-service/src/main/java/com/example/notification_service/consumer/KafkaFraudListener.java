@@ -27,7 +27,7 @@ public class KafkaFraudListener {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(message);
-
+            //Extraction des informations depuis le message
             JsonNode user = jsonNode.path("user");
             String email = user.path("email").asText();
             String firstName = user.path("firstName").asText();
@@ -40,7 +40,7 @@ public class KafkaFraudListener {
             emailDetails.setRecipient(email);
             emailDetails.setSubject("🚨 Alerte de fraude détectée");
 
-
+           //create model utilisé dans le template HTML de l’e-mail.
             Map<String, Object> model = new HashMap<>();
             model.put("firstName", firstName);
             model.put("amount", amount);
