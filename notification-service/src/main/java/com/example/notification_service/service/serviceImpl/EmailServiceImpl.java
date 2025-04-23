@@ -25,11 +25,13 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
+    //SpringTemplateEngine est le moteur Thymeleaf pour générer le contenu HTML
     private SpringTemplateEngine templateEngine;
     @Value("${spring.mail.username}") private String sender;
 
     public String sendHtmlMailWithTemplate(EmailDetails details, Map<String, Object> model) {
         try {
+            //Context contient les variables Thymeleaf
             Context context = new Context();
             context.setVariables(model);
             String htmlContent = templateEngine.process("fraud-alert", context);
@@ -43,7 +45,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(htmlContent, true); // true = HTML
 
             javaMailSender.send(mimeMessage);
-            return "HTML Mail Sent Successfully";
+            return " Mail Sent Successfully";
         } catch (Exception e) {
             return "Error while sending HTML email";
         }

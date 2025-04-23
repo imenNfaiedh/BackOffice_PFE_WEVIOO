@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -17,6 +18,8 @@ import java.util.Map;
 public class KafkaFraudListener {
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
     @KafkaListener(topics = "fraud-detection-results", groupId = "notification-group")
     public void listenFraudDetection(String message) {
         log.info("Message de fraude reçu : {}", message);
@@ -47,6 +50,10 @@ public class KafkaFraudListener {
             // Envoi de l'e-mail HTML
             String result = emailService.sendHtmlMailWithTemplate(emailDetails, model);
             log.info("📬 Résultat de l'envoi de l'e-mail : {}", result);
+           //// envoyer via websocket
+            messagingTemplate.convertAndSend("/topic/fraud-alerts", model);
+            log.info("📢 Notification WebSocket envoyée : {}", model);
+
 
         } catch (Exception e) {
             log.error(" Erreur lors du traitement du message Kafka pour l'envoi de l'e-mail", e);
