@@ -2,6 +2,7 @@ package com.example.transaction_service.controller;
 
 import com.example.transaction_service.dto.UserDto;
 import com.example.transaction_service.entity.User;
+import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,14 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("userss")
 
 public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IUserRepository userRepository;
 
     @GetMapping("/me")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
@@ -54,5 +57,10 @@ public class UserController {
         userDto.setUserId(id);
         return userService.updateUser(userDto,id);
     }
+    @GetMapping("/count")
+    public long countUser() {
+        return userRepository.count();
+    }
+
 
 }

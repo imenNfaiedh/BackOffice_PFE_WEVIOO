@@ -2,6 +2,7 @@ package com.example.transaction_service.controller;
 
 import com.example.transaction_service.dto.TransactionDto;
 import com.example.transaction_service.entity.Transaction;
+import com.example.transaction_service.repository.ITransactionRepository;
 import com.example.transaction_service.service.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ public class TransactionController {
 
     @Autowired
     private ITransactionService transactionService;
+    @Autowired
+    private ITransactionRepository transactionRepository;
 
 
     @GetMapping()
@@ -40,4 +43,9 @@ public class TransactionController {
     {
        return transactionService.updateTransaction(transactionDto,id);
     }
+    @GetMapping("/count")
+    public long countTransaction() {
+        return transactionRepository.count();
+    }
+
 }

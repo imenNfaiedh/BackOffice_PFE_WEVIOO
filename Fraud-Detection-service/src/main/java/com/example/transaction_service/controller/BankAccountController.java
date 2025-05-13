@@ -3,6 +3,7 @@ package com.example.transaction_service.controller;
 import com.example.transaction_service.dto.BankAccountDto;
 
 import com.example.transaction_service.entity.BankAccount;
+import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.service.IBankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,8 @@ import java.util.List;
 public class BankAccountController {
     @Autowired
     IBankAccountService bankAccountService;
+    @Autowired
+    IBankAccountRepository bankAccountRepository;
 
     @GetMapping()
     public List<BankAccountDto> getAllAccount() {
@@ -41,6 +44,11 @@ public class BankAccountController {
     {
         bankAccountDto.setBankAccountId(id);
         return bankAccountService.updateAccount(bankAccountDto,id);
+    }
+
+    @GetMapping("/count")
+    public long countAccount() {
+        return bankAccountRepository.count();
     }
 
 }

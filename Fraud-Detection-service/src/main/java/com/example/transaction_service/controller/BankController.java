@@ -2,6 +2,7 @@ package com.example.transaction_service.controller;
 
 import com.example.transaction_service.dto.BankDto;
 import com.example.transaction_service.entity.Bank;
+import com.example.transaction_service.repository.IBankRepository;
 import com.example.transaction_service.service.IBankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ public class BankController {
 
     @Autowired
     private IBankService bankService;
+    @Autowired
+    private IBankRepository bankRepository;
 
     @GetMapping()
     public List<BankDto> getAllBank()
@@ -40,5 +43,11 @@ public class BankController {
         bankDto.setBankId(id);
         return bankService.updateBank(bankDto,id);
     }
+
+    @GetMapping("/count")
+    public long countBank() {
+        return bankRepository.count();
+    }
+
 
 }

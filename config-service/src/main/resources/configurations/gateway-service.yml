@@ -37,7 +37,9 @@ spring:
         - id: transaction-service
           uri: http://localhost:8087
           predicates:
-            - Path=/users/**, /accounts/**, /cards/**, /banks/**, /transactions/**
+            #- Path=/userss/**, /accounts/**, /cards/**, /banks/**, /transactions/**, api/dashboard/**
+            - Path=/userss/**,/accounts/**,/cards/**,/banks/**,/transactions/**,/api/dashboard/**
+
             - Method=GET,POST,PUT,DELETE,OPTIONS
 
 # Configuration Eureka
