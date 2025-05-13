@@ -27,5 +27,7 @@ public class TransactionDto {
     @Enumerated (EnumType.STRING)
     private TransactionStatus transactionStatus;
 
+    private Long bankAccountId;
+
 
 }

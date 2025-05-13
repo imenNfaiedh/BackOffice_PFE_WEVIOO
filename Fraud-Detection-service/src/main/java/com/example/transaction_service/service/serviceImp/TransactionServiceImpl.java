@@ -1,9 +1,11 @@
 package com.example.transaction_service.service.serviceImp;
 
 import com.example.transaction_service.dto.TransactionDto;
+import com.example.transaction_service.entity.BankAccount;
 import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.mapper.ITransactionMapper;
+import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.repository.ITransactionRepository;
 import com.example.transaction_service.service.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ public class TransactionServiceImpl  implements ITransactionService {
     ITransactionRepository transactionRepository;
     @Autowired
     ITransactionMapper transactionMapper;
+    @Autowired
+    IBankAccountRepository bankAccountRepository;
 
     @Override
     public List<TransactionDto> getAllTransaction() {
@@ -38,10 +42,15 @@ public class TransactionServiceImpl  implements ITransactionService {
     }
 
     @Override
-    public TransactionDto createTransaction(Transaction transaction) {
-         transaction = transactionRepository.save(transaction);
+    public TransactionDto createTransaction(TransactionDto transactionDto) {
+        Transaction transaction = transactionMapper.toEntity(transactionDto);
+        BankAccount bankAccount = bankAccountRepository.findById(transactionDto.getBankAccountId())
+                .orElseThrow(() -> new NotFoundException("Bank account not found with ID " + transactionDto.getBankAccountId()));
+        transaction.setBankAccount(bankAccount);
+        transaction = transactionRepository.save(transaction);
         return transactionMapper.toDto(transaction);
     }
+
 
     @Override
     public TransactionDto updateTransaction(TransactionDto transactionDto, Long id) {

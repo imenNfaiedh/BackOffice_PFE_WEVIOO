@@ -39,6 +39,10 @@ public class ProcessService {
                     .orElseThrow(() -> new NotFoundException("Transaction not found" +transactionId));
 
             User user = transaction.getBankAccount().getUser();
+            if (user==null){
+                log.error("user not found ");
+                throw new NotFoundException("user not found");
+            }
             Long userId = user.getUserId();
 
             boolean isFraudulent = false;

@@ -33,10 +33,10 @@ public class TransactionController {
     }
 
     @PostMapping("")
-    public TransactionDto createTransaction(@RequestBody Transaction transaction)
-    {
-        return transactionService.createTransaction(transaction);
+    public TransactionDto createTransaction(@RequestBody TransactionDto transactionDto) {
+        return transactionService.createTransaction(transactionDto);
     }
+
 
     @PutMapping("/{id}")
     public TransactionDto updateTransaction (@RequestBody TransactionDto transactionDto ,@PathVariable Long id)

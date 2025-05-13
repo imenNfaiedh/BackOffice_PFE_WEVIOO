@@ -9,7 +9,7 @@ public interface ITransactionService {
     List<TransactionDto> getAllTransaction();
 
     TransactionDto getTransactionById (Long id);
-    TransactionDto createTransaction (Transaction transaction);
+    public TransactionDto createTransaction(TransactionDto transactionDto);
     TransactionDto updateTransaction (TransactionDto transactionDto , Long id);
     void deleteTransaction (Long id);
 }
