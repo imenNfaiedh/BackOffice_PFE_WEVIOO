@@ -2,6 +2,7 @@ package com.example.transaction_service.service.serviceImp;
 
 import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.entity.User;
+import com.example.transaction_service.enumeration.TransactionStatus;
 import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.repository.ITransactionRepository;
 import com.example.transaction_service.repository.IUserRepository;
@@ -27,6 +28,7 @@ public class ProcessService {
     @Autowired
     private IUserRepository userRepository;
 
+
     public void startProcess(Map<String, Object> data) {
         try {
             log.info("Processus déclenché avec données : {}", data);
@@ -36,10 +38,10 @@ public class ProcessService {
             Double amount = (Double) data.get("fds004_amount");
 
             Transaction transaction = transactionRepository.findById(transactionId)
-                    .orElseThrow(() -> new NotFoundException("Transaction not found" +transactionId));
+                    .orElseThrow(() -> new NotFoundException("Transaction not found " + transactionId));
 
             User user = transaction.getBankAccount().getUser();
-            if (user==null){
+            if (user == null) {
                 log.error("user not found ");
                 throw new NotFoundException("user not found");
             }
@@ -52,56 +54,54 @@ public class ProcessService {
                 isFraudulent = true;
             }
 
-            //  Période à analyser : les 10 dernières minutes
+            // Période à analyser : les 10 dernières minutes
             Date tenMinutesAgo = new Date(System.currentTimeMillis() - 10 * 60 * 1000);
             List<Transaction> recentTransactions = transactionRepository
                     .findByBankAccount_User_UserIdAndTransactionDateAfter(userId, tenMinutesAgo);
 
-            //  Règle 2
             if (isHighFrequency(recentTransactions, reasons)) {
                 isFraudulent = true;
             }
 
-            //  Règle 3
             if (isMultipleCountries(recentTransactions, reasons)) {
                 isFraudulent = true;
             }
 
+            if (isFraudulent) {
+                transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS);
+                user.setSuspicious_activity(true);
+                userRepository.save(user);
 
-            if (!isFraudulent) {
-                log.info("Aucune fraude détectée pour cette transaction.");
-                return;
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("userId", user.getUserId());
+                userMap.put("firstName", user.getFirstName());
+                userMap.put("lastName", user.getLastName());
+                userMap.put("email", user.getEmail());
+                userMap.put("tel", user.getTel());
+                userMap.put("suspiciousActivity", user.getSuspicious_activity());
+
+                Map<String, Object> fraudResult = new HashMap<>();
+                fraudResult.put("transactionId", transaction.getTransactionId());
+                fraudResult.put("amount", transaction.getAmount());
+                fraudResult.put("country", transaction.getCountry());
+                fraudResult.put("user", userMap);
+                fraudResult.put("reason", String.join(" & ", reasons));
+
+                String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
+                kafkaProducer.sendFraudDetectionResult(fraudResultJson);
+                log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
+            } else {
+                transaction.setTransactionStatus(TransactionStatus.VALID);
+                log.info("Aucune fraude détectée pour cette transaction, statut mis à VALIDATED.");
             }
 
-
-            user.setSuspicious_activity(true);
-            userRepository.save(user);
-
-
-            Map<String, Object> userMap = new HashMap<>();
-            userMap.put("userId", user.getUserId());
-            userMap.put("firstName", user.getFirstName());
-            userMap.put("lastName", user.getLastName());
-            userMap.put("email", user.getEmail());
-            userMap.put("tel", user.getTel());
-            userMap.put("suspiciousActivity", user.getSuspicious_activity());
-
-            Map<String, Object> fraudResult = new HashMap<>();
-            fraudResult.put("transactionId", transaction.getTransactionId());
-            fraudResult.put("amount", transaction.getAmount());
-            fraudResult.put("country", transaction.getCountry());
-            fraudResult.put("user", userMap);
-            fraudResult.put("reason", String.join(" & ", reasons));
-
-
-            String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
-            kafkaProducer.sendFraudDetectionResult(fraudResultJson);
-            log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
+            transactionRepository.save(transaction); // Sauvegarder la mise à jour du statut
 
         } catch (Exception e) {
             log.error("Erreur dans le processus de détection de fraude : ", e);
         }
     }
+
 
     // Règle 1
     private boolean isHighAmount(Double amount, List<String> reasons) {
@@ -112,7 +112,7 @@ public class ProcessService {
         return false;
     }
 
-    //  Règle 2
+    // Règle 2
     private boolean isHighFrequency(List<Transaction> recentTransactions, List<String> reasons) {
         if (recentTransactions.size() > 5) {
             reasons.add("Trop de transactions en moins de 10 minutes");
