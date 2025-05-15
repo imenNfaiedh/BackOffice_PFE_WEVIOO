@@ -1,10 +1,13 @@
 package com.example.transaction_service.service.serviceImp;
 
+import com.example.transaction_service.dto.BankAccountDto;
 import com.example.transaction_service.dto.UserDto;
+import com.example.transaction_service.entity.BankAccount;
 import com.example.transaction_service.entity.User;
 import com.example.transaction_service.enumeration.UserRole;
 import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.mapper.IUserMapper;
+import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,6 +32,8 @@ public class UserServiceImpl implements IUserService {
     private IUserRepository userRepository;
     @Autowired
     private IUserMapper userMapper;
+    @Autowired
+    private IBankAccountRepository bankAccountRepository;
     @Override
     public List<UserDto> getAllUser() {
         List<User> users= userRepository.findAll();
@@ -126,4 +132,18 @@ public class UserServiceImpl implements IUserService {
                     return userRepository.save(user);
                 });
     }
+
+    public List<BankAccountDto> getBankAccountsByUser(Long userId) {
+        List<BankAccount> accounts = bankAccountRepository.findByUser_UserId(userId);
+        return accounts.stream()
+                .map(account -> new BankAccountDto(
+                        account.getBankAccountId(),
+                        account.getAccountNumber(),
+                        account.getOpeningDate(),
+                        account.getBalance(),
+                        account.getTypeBankAccount()
+                ))
+                .collect(Collectors.toList());
+    }
+
 }

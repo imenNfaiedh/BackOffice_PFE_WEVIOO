@@ -1,5 +1,6 @@
 package com.example.transaction_service.controller;
 
+import com.example.transaction_service.dto.BankAccountDto;
 import com.example.transaction_service.dto.UserDto;
 import com.example.transaction_service.entity.User;
 import com.example.transaction_service.repository.IUserRepository;
@@ -30,9 +31,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
-
-
     @GetMapping()
     public List<UserDto> getAllUser()
     {
@@ -62,5 +60,15 @@ public class UserController {
         return userRepository.count();
     }
 
+
+    // Endpoint GET pour récupérer la liste des comptes bancaires d’un user
+    @GetMapping("/{userId}/bank-accounts")
+    public ResponseEntity<List<BankAccountDto>> getBankAccountsByUser(@PathVariable Long userId) {
+        List<BankAccountDto> accounts = userService.getBankAccountsByUser(userId);
+        if (accounts.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(accounts);
+    }
 
 }
