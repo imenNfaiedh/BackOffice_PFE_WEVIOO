@@ -4,6 +4,7 @@ import com.example.transaction_service.dto.TransactionDto;
 import com.example.transaction_service.entity.BankAccount;
 import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.enumeration.TransactionStatus;
+import com.example.transaction_service.enumeration.TypeTransaction;
 import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.mapper.ITransactionMapper;
 import com.example.transaction_service.repository.IBankAccountRepository;
@@ -51,6 +52,7 @@ public class TransactionServiceImpl  implements ITransactionService {
         transaction.setBankAccount(bankAccount);
 
         transaction.setTransactionStatus(TransactionStatus.VALID);
+        transaction.setTypeTransaction(TypeTransaction.TRANSFER);
         transaction = transactionRepository.save(transaction);
         return transactionMapper.toDto(transaction);
     }
