@@ -4,5 +4,6 @@ public enum TypeTransaction {
 
     PAYMENT,
     WITHDRAWAL, ////RETRAIT,
-    TRANSFER ////VIREMENT
+    TRANSFER ,////VIREMENT
+    DEPOSIT
 }

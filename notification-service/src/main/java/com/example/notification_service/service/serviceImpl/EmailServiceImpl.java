@@ -48,6 +48,7 @@ public class EmailServiceImpl implements EmailService {
             return " Mail Sent Successfully";
         } catch (Exception e) {
             return "Error while sending HTML email";
+
         }
     }
 

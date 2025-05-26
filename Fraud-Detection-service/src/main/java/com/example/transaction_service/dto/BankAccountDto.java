@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 @AllArgsConstructor
 @Getter
@@ -18,7 +19,7 @@ public class BankAccountDto {
     private Long bankAccountId;
     private Long accountNumber;
     private Date openingDate;
-    private double balance;
+    private BigDecimal balance;
     @Enumerated(EnumType.STRING)
     private TypeBankAccount typeBankAccount;
 }

@@ -23,6 +23,7 @@ public class TransactionController {
     @GetMapping()
     public List<TransactionDto> getAllTransaction ()
     {
+
         return transactionService.getAllTransaction();
     }
 

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 @Getter
 @Setter
@@ -17,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class TransactionDto {
     private Long transactionId;
-    private double amount;
+    private BigDecimal amount;
     private String currency;
     private String country;
 
@@ -30,6 +31,8 @@ public class TransactionDto {
     private TransactionStatus transactionStatus;
 
     private Long bankAccountId;
+    private Long senderBankAccountId; // <- l’ID du compte bancaire de l’expéditeur
+    private Long recipientBankAccountId; // <- celui du bénéficiaire
 
 
 }

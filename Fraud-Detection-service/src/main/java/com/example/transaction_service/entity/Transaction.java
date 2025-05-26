@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -21,7 +22,7 @@ public class Transaction implements Serializable  {
     @Column(name = "FDS004_TRANSACTION_ID")
     private Long transactionId;
     @Column(name = "FDS004_AMOUNT")
-    private double amount;
+    private BigDecimal amount;
     @Column(name = "FDS004_CURRENCY")
     private String currency;
     @Column(name = "FDS004_COUNTRY")

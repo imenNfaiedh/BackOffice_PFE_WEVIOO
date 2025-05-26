@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class BankAccount implements Serializable {
    @Column(name = "FDS002_OPENING_DATE")
     private Date openingDate;
    @Column(name = "FDS002_BALANCE")
-    private double balance ;
+    private BigDecimal balance ;
 
     @Enumerated(EnumType.STRING)
     private TypeBankAccount typeBankAccount;

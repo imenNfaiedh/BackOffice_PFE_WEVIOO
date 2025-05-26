@@ -25,10 +25,15 @@ public class KafkaFraudListener {
         log.info("Message de fraude reçu : {}", message);
 
         try {
+
+            //get user conected from token
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(message);
             //Extraction des informations depuis le message
             JsonNode user = jsonNode.path("user");
+
+            // if user conected === user
+
             String email = user.path("email").asText();
             String firstName = user.path("firstName").asText();
             Double amount = jsonNode.path("amount").asDouble();
@@ -50,7 +55,7 @@ public class KafkaFraudListener {
             // Envoi de l'e-mail HTML
             String result = emailService.sendHtmlMailWithTemplate(emailDetails, model);
             log.info("📬 Résultat de l'envoi de l'e-mail : {}", result);
-           //// envoyer via websocket
+           // envoyer via websocket
             messagingTemplate.convertAndSend("/topic/fraud-alerts", model);
             log.info("📢 Notification WebSocket envoyée : {}", model);
 
