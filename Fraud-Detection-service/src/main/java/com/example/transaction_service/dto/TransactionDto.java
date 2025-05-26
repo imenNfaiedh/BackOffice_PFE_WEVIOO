@@ -3,6 +3,7 @@ package com.example.transaction_service.dto;
 import com.example.transaction_service.enumeration.TransactionStatus;
 import com.example.transaction_service.enumeration.TypeTransaction;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class TransactionDto {
     private Long transactionId;
+
     private BigDecimal amount;
     private String currency;
     private String country;

@@ -12,8 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import java.math.BigInteger;
+import java.util.Base64;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -35,7 +40,11 @@ public class ProcessService {
 
             Integer transactionIdInteger = (Integer) data.get("fds004_transaction_id");
             Long transactionId = transactionIdInteger != null ? transactionIdInteger.longValue() : null;
-            Double amount = (Double) data.get("fds004_amount");
+
+            Object amountRaw = data.get("fds004_amount");
+            BigDecimal amount = decodeDebeziumDecimal(amountRaw);
+
+
 
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new NotFoundException("Transaction not found " + transactionId));
@@ -104,12 +113,12 @@ public class ProcessService {
 
 
     // Règle 1
-    private boolean isHighAmount(Double amount, List<String> reasons) {
-        if (amount != null && amount > 3000) {
+    private boolean isHighAmount(BigDecimal amount, List<String> reasons) {
+        if (amount != null && amount.compareTo(BigDecimal.valueOf(3000)) > 0) {
             reasons.add("Montant supérieur à 3000");
-            return true;
+
         }
-        return false;
+        return true;
     }
 
     // Règle 2
@@ -133,4 +142,31 @@ public class ProcessService {
         }
         return false;
     }
+
+
+
+// decode amount base decimal=> base 2
+    public BigDecimal decodeDebeziumDecimal(Object debeziumDecimal) {
+        if (debeziumDecimal instanceof Map) {
+            Map<String, Object> decimalMap = (Map<String, Object>) debeziumDecimal;
+            String base64Value = (String) decimalMap.get("value");
+            Integer scale = (Integer) decimalMap.get("scale");
+
+            byte[] bytes = Base64.getDecoder().decode(base64Value);
+            BigInteger unscaledValue = new BigInteger(bytes);
+            return new BigDecimal(unscaledValue, scale);
+        } else if (debeziumDecimal instanceof String) {
+            // Parfois c’est juste un string base64 sans scale, tu peux adapter selon ce que tu reçois
+            String base64Value = (String) debeziumDecimal;
+            byte[] bytes = Base64.getDecoder().decode(base64Value);
+            BigInteger unscaledValue = new BigInteger(bytes);
+            // Par défaut, scale = 0 si pas précisé
+            return new BigDecimal(unscaledValue, 0);
+        } else if (debeziumDecimal instanceof Number) {
+            // Si Debezium renvoie un nombre simple (double, int, etc)
+            return new BigDecimal(debeziumDecimal.toString());
+        }
+        throw new IllegalArgumentException("Format decimal inconnu : " + debeziumDecimal);
+    }
+
 }
