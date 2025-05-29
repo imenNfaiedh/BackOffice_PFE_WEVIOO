@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface ITransactionRepository extends JpaRepository<Transaction,Long> {
     List<Transaction> findByBankAccount_User_UserIdAndTransactionDateAfter(Long userId, Date afterDate);
+
+    List<Transaction> findByBankAccount_User_KeycloakId(String keycloakId);
+
 }

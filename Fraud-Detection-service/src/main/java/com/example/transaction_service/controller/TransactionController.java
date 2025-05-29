@@ -6,6 +6,8 @@ import com.example.transaction_service.repository.ITransactionRepository;
 import com.example.transaction_service.service.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +38,13 @@ public class TransactionController {
     @PostMapping("")
     public TransactionDto createTransaction(@RequestBody TransactionDto transactionDto) {
         return transactionService.createTransaction(transactionDto);
+    }
+
+    @GetMapping("/my-transactions")
+    public ResponseEntity<List<TransactionDto>> getMyTransactions(@AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject(); // ou jwt.getClaim("sub")
+        List<TransactionDto> transactions = transactionService.getTransactionsForCurrentUser(keycloakId);
+        return ResponseEntity.ok(transactions);
     }
 
 

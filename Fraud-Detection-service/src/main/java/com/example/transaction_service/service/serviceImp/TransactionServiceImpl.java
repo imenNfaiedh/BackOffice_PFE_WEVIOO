@@ -128,6 +128,13 @@ public class TransactionServiceImpl  implements ITransactionService {
     }
 
 
+    public List<TransactionDto> getTransactionsForCurrentUser(String keycloakId) {
+        List<Transaction> transactions = transactionRepository.findByBankAccount_User_KeycloakId(keycloakId);
+        return transactionMapper.toDto(transactions);
+    }
+
+
+
 //    @Override
 //    public TransactionDto createTransaction(TransactionDto transactionDto) {
 //

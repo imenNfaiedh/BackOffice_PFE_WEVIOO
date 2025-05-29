@@ -12,4 +12,6 @@ public interface ITransactionService {
     public TransactionDto createTransaction(TransactionDto transactionDto);
     TransactionDto updateTransaction (TransactionDto transactionDto , Long id);
     void deleteTransaction (Long id);
+
+    public List<TransactionDto> getTransactionsForCurrentUser(String keycloakId);
 }
