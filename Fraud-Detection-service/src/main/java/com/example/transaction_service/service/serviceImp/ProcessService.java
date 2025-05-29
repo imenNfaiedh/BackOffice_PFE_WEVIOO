@@ -1,9 +1,11 @@
 package com.example.transaction_service.service.serviceImp;
 
+import com.example.transaction_service.entity.BankAccount;
 import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.entity.User;
 import com.example.transaction_service.enumeration.TransactionStatus;
 import com.example.transaction_service.exception.NotFoundException;
+import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.repository.ITransactionRepository;
 import com.example.transaction_service.repository.IUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +37,8 @@ public class ProcessService {
     private ITransactionRepository transactionRepository;
     @Autowired
     private IUserRepository userRepository;
+    @Autowired
+    private IBankAccountRepository bankAccountRepository;
 
 
     public void startProcess(Map<String, Object> data) {
@@ -43,12 +47,14 @@ public class ProcessService {
 
             Integer transactionIdInteger = (Integer) data.get("fds004_transaction_id");
             Long transactionId = transactionIdInteger != null ? transactionIdInteger.longValue() : null;
-
+            //get amount & decode du base 16->2
             Object amountRaw = data.get("fds004_amount");
             BigDecimal amount = decodeDebeziumDecimal(amountRaw);
 
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new NotFoundException("Transaction not found " + transactionId));
+
+
 
             User user = transaction.getBankAccount().getUser();
             if (user == null) {
@@ -56,7 +62,6 @@ public class ProcessService {
                 throw new NotFoundException("user not found");
             }
            if(transaction.getIsSendNotification() != null &&  transaction.getIsSendNotification().equals(Boolean.TRUE)) {
-
 
                Long userId = user.getUserId();
 
@@ -80,12 +85,28 @@ public class ProcessService {
                    isFraudulent = true;
                }
 
-               if (isFraudulent) {
-                   transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS);
-                   user.setSuspicious_activity(true);
-                   userRepository.save(user);
+               if (isFraudulent) { // Si on détecte une fraude
+                   transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS); // 1. Marquer la transaction comme suspecte
+                   user.setSuspicious_activity(true); // 2. Marquer l’utilisateur
+                   userRepository.save(user); // Sauvegarde l'utilisateur modifié
 
-                   Map<String, Object> userMap = new HashMap<>();
+                   BankAccount bankAccount = transaction.getBankAccount();
+
+
+                   Integer fraudCount = bankAccount.getFraudCount() != null ? bankAccount.getFraudCount() : 0;
+                   fraudCount++;
+                   bankAccount.setFraudCount(fraudCount); // Met à jour l’objet en mémoire
+
+                   if (fraudCount >= 3) {
+                       bankAccount.setIsBlocked(true);
+                       log.warn("Le compte bancaire {} est bloqué après {} fraudes détectées", bankAccount.getBankAccountId(), fraudCount);
+                   }
+
+                   bankAccountRepository.save(bankAccount); // 7. Sauvegarde le compte avec les nouvelles valeurs
+
+
+
+               Map<String, Object> userMap = new HashMap<>();
                    userMap.put("userId", user.getUserId());
                    userMap.put("firstName", user.getFirstName());
                    userMap.put("lastName", user.getLastName());

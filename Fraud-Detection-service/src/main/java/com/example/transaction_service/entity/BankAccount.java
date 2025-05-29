@@ -31,6 +31,13 @@ public class BankAccount implements Serializable {
    @Column(name = "FDS002_BALANCE")
     private BigDecimal balance ;
 
+    @Column(name = "fraud_count")
+    private Integer fraudCount = 0;
+
+    @Column(name = "is_blocked")
+    private Boolean isBlocked = false;
+
+
     @Enumerated(EnumType.STRING)
     private TypeBankAccount typeBankAccount;
 

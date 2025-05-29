@@ -79,6 +79,10 @@ public class TransactionServiceImpl  implements ITransactionService {
         }
         BankAccount senderAccount = senderAccounts.get(0);
 
+        if (senderAccount.getIsBlocked()) {
+            throw new IllegalStateException("Compte bancaire bloqué, aucune transaction autorisée");
+        }
+
         // Vérifier le solde
         if (senderAccount.getBalance().compareTo(transactionDto.getAmount()) < 0) {
             throw new RuntimeException("Insufficient balance");
@@ -135,27 +139,6 @@ public class TransactionServiceImpl  implements ITransactionService {
 
 
 
-//    @Override
-//    public TransactionDto createTransaction(TransactionDto transactionDto) {
-//
-//        //get user conected
-//        // check amount >  transactiondto.getAmout if throw exception impossible
-//        // new trasaction lel user conetcte
-//        // sold = sold - transactionDto.getAmount
-//
-//
-//        Transaction transaction = transactionMapper.toEntity(transactionDto);
-//      //  sold = sold + transactionDto.getAmount
-//        BankAccount bankAccount = bankAccountRepository.findById(transactionDto.getBankAccountId())
-//                .orElseThrow(() -> new NotFoundException("Bank account not found with ID " + transactionDto.getBankAccountId()));
-//        transaction.setBankAccount(bankAccount);
-//
-//        transaction.setTransactionStatus(TransactionStatus.VALID);
-//        transaction.setTypeTransaction(TypeTransaction.TRANSFER);
-//        transaction = transactionRepository.save(transaction);
-//        return transactionMapper.toDto(transaction);
-//    }
-
 
     @Override
     public TransactionDto updateTransaction(TransactionDto transactionDto, Long id) {
@@ -196,4 +179,28 @@ public class TransactionServiceImpl  implements ITransactionService {
 //        transaction = transactionRepository.save(transaction);
 //        return transactionMapper.toDto(transaction);
 //    }
+
+
+
+//    @Override
+//    public TransactionDto createTransaction(TransactionDto transactionDto) {
+//
+//        //get user conected
+//        // check amount >  transactiondto.getAmout if throw exception impossible
+//        // new trasaction lel user conetcte
+//        // sold = sold - transactionDto.getAmount
+//
+//
+//        Transaction transaction = transactionMapper.toEntity(transactionDto);
+//      //  sold = sold + transactionDto.getAmount
+//        BankAccount bankAccount = bankAccountRepository.findById(transactionDto.getBankAccountId())
+//                .orElseThrow(() -> new NotFoundException("Bank account not found with ID " + transactionDto.getBankAccountId()));
+//        transaction.setBankAccount(bankAccount);
+//
+//        transaction.setTransactionStatus(TransactionStatus.VALID);
+//        transaction.setTypeTransaction(TypeTransaction.TRANSFER);
+//        transaction = transactionRepository.save(transaction);
+//        return transactionMapper.toDto(transaction);
+//    }
+
 }
