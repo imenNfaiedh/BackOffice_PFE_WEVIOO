@@ -61,18 +61,16 @@ public class TransactionServiceImpl  implements ITransactionService {
 
         String email = null;
         if (authentication.getPrincipal() instanceof Jwt jwt) {
-            email = jwt.getClaim("email"); // 👈 Assurez-vous que 'email' est présent dans le token
+            email = jwt.getClaim("email");
         }
 
         if (email == null) {
-            throw new RuntimeException("Email introuvable dans le token.");
+            throw new NotFoundException("Email introuvable dans le token.");
         }
 
         log.info("Connected user email: {}", email);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found lala"));
-
-
+                .orElseThrow(() -> new NotFoundException("User connected not found "));
 
         // Récupérer le compte source (debit)
         List<BankAccount> senderAccounts = bankAccountRepository.findByUser_UserId(user.getUserId());
@@ -90,6 +88,11 @@ public class TransactionServiceImpl  implements ITransactionService {
         BankAccount receiverAccount = bankAccountRepository.findById(transactionDto.getBankAccountId())
                 .orElseThrow(() -> new NotFoundException("Receiver bank account not found"));
 
+        // 5. Empêcher un transfert vers soi-même
+        if (senderAccount.getBankAccountId().equals(receiverAccount.getBankAccountId())) {
+            throw new RuntimeException("Le compte source et le compte destinataire doivent être différents.");
+        }
+
         // 1. Débit : créer transaction pour l'utilisateur connecté
         Transaction debitTransaction = new Transaction();
         debitTransaction.setAmount(transactionDto.getAmount());
@@ -99,6 +102,7 @@ public class TransactionServiceImpl  implements ITransactionService {
         debitTransaction.setBankAccount(senderAccount);
         debitTransaction.setTransactionStatus(TransactionStatus.VALID);
         debitTransaction.setTypeTransaction(TypeTransaction.TRANSFER);
+        debitTransaction.setIsSendNotification(Boolean.TRUE);
         transactionRepository.save(debitTransaction);
 
         // Mise à jour du solde expéditeur

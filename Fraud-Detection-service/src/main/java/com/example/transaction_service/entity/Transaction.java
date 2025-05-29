@@ -30,6 +30,9 @@ public class Transaction implements Serializable  {
     @Column(name = "FDS004_TRANSACTION_DATE")
     private Date transactionDate;
 
+    @Column(name = "FDS004_IS_SEND_NOTIF")
+    private Boolean isSendNotification;
+
     @Enumerated (EnumType.STRING)
     private TypeTransaction typeTransaction;
 

@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,8 +47,6 @@ public class ProcessService {
             Object amountRaw = data.get("fds004_amount");
             BigDecimal amount = decodeDebeziumDecimal(amountRaw);
 
-
-
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new NotFoundException("Transaction not found " + transactionId));
 
@@ -54,58 +55,63 @@ public class ProcessService {
                 log.error("user not found ");
                 throw new NotFoundException("user not found");
             }
-            Long userId = user.getUserId();
+           if(transaction.getIsSendNotification() != null &&  transaction.getIsSendNotification().equals(Boolean.TRUE)) {
 
-            boolean isFraudulent = false;
-            List<String> reasons = new ArrayList<>();
 
-            if (isHighAmount(amount, reasons)) {
-                isFraudulent = true;
-            }
+               Long userId = user.getUserId();
 
-            // Période à analyser : les 10 dernières minutes
-            Date tenMinutesAgo = new Date(System.currentTimeMillis() - 10 * 60 * 1000);
-            List<Transaction> recentTransactions = transactionRepository
-                    .findByBankAccount_User_UserIdAndTransactionDateAfter(userId, tenMinutesAgo);
+               boolean isFraudulent = false;
+               List<String> reasons = new ArrayList<>();
 
-            if (isHighFrequency(recentTransactions, reasons)) {
-                isFraudulent = true;
-            }
+               if (isHighAmount(amount, reasons)) {
+                   isFraudulent = true;
+               }
 
-            if (isMultipleCountries(recentTransactions, reasons)) {
-                isFraudulent = true;
-            }
+               // Période à analyser : les 10 dernières minutes
+               Date tenMinutesAgo = new Date(System.currentTimeMillis() - 10 * 60 * 1000);
+               List<Transaction> recentTransactions = transactionRepository
+                       .findByBankAccount_User_UserIdAndTransactionDateAfter(userId, tenMinutesAgo);
 
-            if (isFraudulent) {
-                transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS);
-                user.setSuspicious_activity(true);
-                userRepository.save(user);
+               if (isHighFrequency(recentTransactions, reasons)) {
+                   isFraudulent = true;
+               }
 
-                Map<String, Object> userMap = new HashMap<>();
-                userMap.put("userId", user.getUserId());
-                userMap.put("firstName", user.getFirstName());
-                userMap.put("lastName", user.getLastName());
-                userMap.put("email", user.getEmail());
-                userMap.put("tel", user.getTel());
-                userMap.put("suspiciousActivity", user.getSuspicious_activity());
+               if (isMultipleCountries(recentTransactions, reasons)) {
+                   isFraudulent = true;
+               }
 
-                Map<String, Object> fraudResult = new HashMap<>();
-                fraudResult.put("transactionId", transaction.getTransactionId());
-                fraudResult.put("amount", transaction.getAmount());
-                fraudResult.put("country", transaction.getCountry());
-                fraudResult.put("user", userMap);
-                fraudResult.put("reason", String.join(" & ", reasons));
+               if (isFraudulent) {
+                   transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS);
+                   user.setSuspicious_activity(true);
+                   userRepository.save(user);
 
-                String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
-                kafkaProducer.sendFraudDetectionResult(fraudResultJson);
-                log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
-            } else {
-                transaction.setTransactionStatus(TransactionStatus.VALID);
-                log.info("Aucune fraude détectée pour cette transaction, statut mis à VALIDATED.");
-            }
+                   Map<String, Object> userMap = new HashMap<>();
+                   userMap.put("userId", user.getUserId());
+                   userMap.put("firstName", user.getFirstName());
+                   userMap.put("lastName", user.getLastName());
+                   userMap.put("email", user.getEmail());
+                   userMap.put("tel", user.getTel());
+                   userMap.put("suspiciousActivity", user.getSuspicious_activity());
 
-            transactionRepository.save(transaction); // Sauvegarder la mise à jour du statut
+                   Map<String, Object> fraudResult = new HashMap<>();
+                   fraudResult.put("transactionId", transaction.getTransactionId());
+                   fraudResult.put("amount", transaction.getAmount());
+                   fraudResult.put("country", transaction.getCountry());
+                   fraudResult.put("user", userMap);
+                   fraudResult.put("reason", String.join(" & ", reasons));
 
+                   String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
+                   kafkaProducer.sendFraudDetectionResult(fraudResultJson);
+                   log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
+               } else {
+                   transaction.setTransactionStatus(TransactionStatus.VALID);
+                   log.info("Aucune fraude détectée pour cette transaction, statut mis à VALIDATED.");
+               }
+
+               transaction.setIsSendNotification(Boolean.FALSE);
+               transactionRepository.save(transaction); // Sauvegarder la mise à jour du statut
+
+           }
         } catch (Exception e) {
             log.error("Erreur dans le processus de détection de fraude : ", e);
         }
@@ -116,9 +122,10 @@ public class ProcessService {
     private boolean isHighAmount(BigDecimal amount, List<String> reasons) {
         if (amount != null && amount.compareTo(BigDecimal.valueOf(3000)) > 0) {
             reasons.add("Montant supérieur à 3000");
-
+            return true;
         }
-        return true;
+
+        return false;
     }
 
     // Règle 2
@@ -144,8 +151,7 @@ public class ProcessService {
     }
 
 
-
-// decode amount base decimal=> base 2
+    // decode amount base decimal=> base 2
     public BigDecimal decodeDebeziumDecimal(Object debeziumDecimal) {
         if (debeziumDecimal instanceof Map) {
             Map<String, Object> decimalMap = (Map<String, Object>) debeziumDecimal;
@@ -168,5 +174,7 @@ public class ProcessService {
         }
         throw new IllegalArgumentException("Format decimal inconnu : " + debeziumDecimal);
     }
+
+
 
 }
