@@ -85,24 +85,24 @@ public class ProcessService {
                    isFraudulent = true;
                }
 
-               if (isFraudulent) { // Si on détecte une fraude
-                   transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS); // 1. Marquer la transaction comme suspecte
-                   user.setSuspicious_activity(true); // 2. Marquer l’utilisateur
-                   userRepository.save(user); // Sauvegarde l'utilisateur modifié
+               if (isFraudulent) {
+                   transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS);
+                   user.setSuspicious_activity(true);
+                   userRepository.save(user);
 
                    BankAccount bankAccount = transaction.getBankAccount();
 
 
                    Integer fraudCount = bankAccount.getFraudCount() != null ? bankAccount.getFraudCount() : 0;
                    fraudCount++;
-                   bankAccount.setFraudCount(fraudCount); // Met à jour l’objet en mémoire
+                   bankAccount.setFraudCount(fraudCount);
 
                    if (fraudCount >= 3) {
                        bankAccount.setIsBlocked(true);
                        log.warn("Le compte bancaire {} est bloqué après {} fraudes détectées", bankAccount.getBankAccountId(), fraudCount);
                    }
 
-                   bankAccountRepository.save(bankAccount); // 7. Sauvegarde le compte avec les nouvelles valeurs
+                   bankAccountRepository.save(bankAccount);
 
 
 
@@ -130,7 +130,7 @@ public class ProcessService {
                }
 
                transaction.setIsSendNotification(Boolean.FALSE);
-               transactionRepository.save(transaction); // Sauvegarder la mise à jour du statut
+               transactionRepository.save(transaction);
 
            }
         } catch (Exception e) {

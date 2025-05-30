@@ -20,6 +20,14 @@ public class BankAccountServiceImp implements IBankAccountService {
     private IBankAccountRepository bankAccountRepository;
     @Autowired
     private IBankAccountMapper bankAccountMapper;
+
+
+
+    public List<BankAccountDto> getBankAccountFoCurrentUser(String KeycloakId)
+    {
+        List<BankAccount> bankAccounts =bankAccountRepository.findByUser_KeycloakId(KeycloakId);
+        return bankAccountMapper.toDto(bankAccounts);
+    }
     @Override
     public List<BankAccountDto> getAllAccount() {
          List<BankAccount> bankAccounts= bankAccountRepository.findAll();

@@ -8,6 +8,8 @@ import com.example.transaction_service.service.IBankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,14 @@ public class BankAccountController {
     IBankAccountService bankAccountService;
     @Autowired
     IBankAccountRepository bankAccountRepository;
+
+    @GetMapping("myBankAccounts")
+    public ResponseEntity<List<BankAccountDto>> getMyBankAccount(@AuthenticationPrincipal Jwt jwt)
+    {
+        String keycloakId =jwt.getSubject();
+        List<BankAccountDto> bankAccountDtos =bankAccountService.getBankAccountFoCurrentUser(keycloakId);
+        return ResponseEntity.ok(bankAccountDtos);
+    }
 
     @GetMapping()
     public List<BankAccountDto> getAllAccount() {

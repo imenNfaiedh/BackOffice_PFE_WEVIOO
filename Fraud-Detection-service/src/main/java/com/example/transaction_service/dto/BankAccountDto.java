@@ -20,6 +20,8 @@ public class BankAccountDto {
     private Long accountNumber;
     private Date openingDate;
     private BigDecimal balance;
+    private Integer fraudCount = 0;
+    private Boolean isBlocked = false;
     @Enumerated(EnumType.STRING)
     private TypeBankAccount typeBankAccount;
 }

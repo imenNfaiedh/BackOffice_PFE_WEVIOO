@@ -10,6 +10,7 @@ import com.example.transaction_service.mapper.IUserMapper;
 import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IUserService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class UserServiceImpl implements IUserService {
 
     @Autowired
@@ -141,6 +143,8 @@ public class UserServiceImpl implements IUserService {
                         account.getAccountNumber(),
                         account.getOpeningDate(),
                         account.getBalance(),
+                        account.getFraudCount(),
+                        account.getIsBlocked(),
                         account.getTypeBankAccount()
                 ))
                 .collect(Collectors.toList());

@@ -6,6 +6,7 @@ import com.example.transaction_service.entity.BankAccount;
 import java.util.List;
 
 public interface IBankAccountService {
+    public List<BankAccountDto> getBankAccountFoCurrentUser(String KeycloakId);
     List<BankAccountDto> getAllAccount();
 
     BankAccountDto getAccountById(Long id);
