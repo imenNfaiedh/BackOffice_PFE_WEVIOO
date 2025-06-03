@@ -6,7 +6,9 @@ import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.entity.User;
 import com.example.transaction_service.enumeration.TransactionStatus;
 import com.example.transaction_service.enumeration.TypeTransaction;
+import com.example.transaction_service.exception.InsufficientBalanceException;
 import com.example.transaction_service.exception.NotFoundException;
+import com.example.transaction_service.exception.SameBankAccountException;
 import com.example.transaction_service.mapper.ITransactionMapper;
 import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.repository.ITransactionRepository;
@@ -85,7 +87,7 @@ public class TransactionServiceImpl  implements ITransactionService {
 
         // Vérifier le solde
         if (senderAccount.getBalance().compareTo(transactionDto.getAmount()) < 0) {
-            throw new RuntimeException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance");
         }
 
         // Récupérer le compte du bénéficiaire (crédit)
@@ -94,7 +96,7 @@ public class TransactionServiceImpl  implements ITransactionService {
 
         // 5. Empêcher un transfert vers soi-même
         if (senderAccount.getBankAccountId().equals(receiverAccount.getBankAccountId())) {
-            throw new RuntimeException("Le compte source et le compte destinataire doivent être différents.");
+            throw new SameBankAccountException("Le compte source et le compte destinataire doivent être différents.");
         }
 
         // 1. Débit : créer transaction pour l'utilisateur connecté

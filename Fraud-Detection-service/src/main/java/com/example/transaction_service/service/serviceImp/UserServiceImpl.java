@@ -6,6 +6,7 @@ import com.example.transaction_service.entity.BankAccount;
 import com.example.transaction_service.entity.User;
 import com.example.transaction_service.enumeration.UserRole;
 import com.example.transaction_service.exception.NotFoundException;
+import com.example.transaction_service.mapper.IBankAccountMapper;
 import com.example.transaction_service.mapper.IUserMapper;
 import com.example.transaction_service.repository.IBankAccountRepository;
 import com.example.transaction_service.repository.IUserRepository;
@@ -34,6 +35,8 @@ public class UserServiceImpl implements IUserService {
     private IUserRepository userRepository;
     @Autowired
     private IUserMapper userMapper;
+    @Autowired
+    private IBankAccountMapper bankAccountMapper;
     @Autowired
     private IBankAccountRepository bankAccountRepository;
     @Override
@@ -135,19 +138,25 @@ public class UserServiceImpl implements IUserService {
                 });
     }
 
+
+
     public List<BankAccountDto> getBankAccountsByUser(Long userId) {
         List<BankAccount> accounts = bankAccountRepository.findByUser_UserId(userId);
-        return accounts.stream()
-                .map(account -> new BankAccountDto(
-                        account.getBankAccountId(),
-                        account.getAccountNumber(),
-                        account.getOpeningDate(),
-                        account.getBalance(),
-                        account.getFraudCount(),
-                        account.getIsBlocked(),
-                        account.getTypeBankAccount()
-                ))
-                .collect(Collectors.toList());
-    }
+        return bankAccountMapper.toDto(accounts);
+//        return accounts.stream()
+//                .map(account -> new BankAccountDto(
+//                        account.getBankAccountId(),
+//                        account.getAccountNumber(),
+//                        account.getOpeningDate(),
+//                        account.getBalance(),
+//                        account.getFraudCount(),
+//                        account.getIsBlocked(),
+//                        account.getTypeBankAccount(),
+//                        account.getUser().getFirstName(),
+//                        account.getUser().getLastName() ))
+//
+//
+//                .collect(Collectors.toList());
+//    }
 
-}
+}}

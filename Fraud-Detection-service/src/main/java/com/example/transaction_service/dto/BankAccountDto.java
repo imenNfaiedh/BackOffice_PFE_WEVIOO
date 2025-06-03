@@ -1,5 +1,6 @@
 package com.example.transaction_service.dto;
 
+import com.example.transaction_service.entity.User;
 import com.example.transaction_service.enumeration.TypeBankAccount;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,4 +25,9 @@ public class BankAccountDto {
     private Boolean isBlocked = false;
     @Enumerated(EnumType.STRING)
     private TypeBankAccount typeBankAccount;
+
+    private String userFirstName;
+    private String userLastName;
+
+
 }
