@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ClaimServiceImp implements IClaimService {
@@ -26,15 +28,17 @@ public class ClaimServiceImp implements IClaimService {
     @Autowired
     private IClaimMapper claimMapper;
     @Override
-    public ClaimDto createClaim(Claim claim) {
+    public ClaimDto createClaimForConnectedUser(Claim claim, String keycloakId) {
         claim.setDateReclamation(LocalDateTime.now());
         claim.setStatus("EN_ATTENTE");
-        User user = userRepository.findById(claim.getUser().getUserId())
+        User user = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(()->   new NotFoundException("User with not found with id" + claim.getUser().getUserId()));
         claim.setUser(user);
         Claim claimSaved = claimRepository.save(claim);
         return claimMapper.toDto(claimSaved);
     }
+
+
 
     @Override
     public List<ClaimDto> getClaimByUser(Long userId) {
@@ -57,4 +61,22 @@ public class ClaimServiceImp implements IClaimService {
 
         return claimMapper.toDto(claimRepository.save(claim));
         }
+
+    @Override
+    public List<ClaimDto> getClaimForCurrentUser(String keycloakId) {
+        List<Claim> claims = claimRepository.findByUser_keycloakId(keycloakId);
+        return claimMapper.toDto(claims);
+    }
+
+    @Override
+    public ClaimDto getClaimById(Long id) {
+        Optional<Claim> claim =claimRepository.findById(id);
+        if (claim.isPresent()){
+            return claimMapper.toDto(claim.get());
+        }
+        else {
+            throw new NotFoundException("reclamation notfound with id : " +id);
+        }
+
+    }
 }

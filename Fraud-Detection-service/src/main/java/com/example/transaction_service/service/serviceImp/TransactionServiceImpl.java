@@ -56,7 +56,7 @@ public class TransactionServiceImpl  implements ITransactionService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     public TransactionDto createTransaction(TransactionDto transactionDto) {
         // Récupérer l'utilisateur connecté
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
