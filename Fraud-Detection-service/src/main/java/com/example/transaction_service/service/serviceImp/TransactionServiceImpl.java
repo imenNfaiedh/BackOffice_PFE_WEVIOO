@@ -164,8 +164,14 @@ public class TransactionServiceImpl  implements ITransactionService {
 
     @Override
     public void deleteTransaction(Long id) {
-
+        if (!transactionRepository.existsById(id)) {
+            throw new RuntimeException("Claim not found with ID: " + id);
+        }
+        transactionRepository.deleteById(id);
     }
+
+
+}
 
 //    public TransactionDto updateTransactionStatus(Long transactionId, boolean isFraudulent) {
 //        Transaction transaction = transactionRepository.findById(transactionId)
@@ -205,4 +211,4 @@ public class TransactionServiceImpl  implements ITransactionService {
 //        return transactionMapper.toDto(transaction);
 //    }
 
-}
+

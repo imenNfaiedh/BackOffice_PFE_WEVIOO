@@ -79,4 +79,14 @@ public class ClaimServiceImp implements IClaimService {
         }
 
     }
+
+    @Override
+    public void deleteClaim(Long id) {
+        if (!claimRepository.existsById(id)) {
+            throw new RuntimeException("Claim not found with ID: " + id);
+        }
+        claimRepository.deleteById(id);
+    }
+
+
 }

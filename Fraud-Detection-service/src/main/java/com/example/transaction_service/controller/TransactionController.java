@@ -58,4 +58,11 @@ public class TransactionController {
         return transactionRepository.count();
     }
 
+    @DeleteMapping("{id}")
+    public void deleteTransaction(@PathVariable Long id)
+    {
+
+        transactionService.deleteTransaction(id);
+    }
+
 }

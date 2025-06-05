@@ -64,5 +64,12 @@ public class ClaimController {
         return ResponseEntity.ok(claimDto);
     }
 
+    @DeleteMapping("{id}")
+    public void deleteClaim(@PathVariable Long id)
+    {
+
+         claimService.deleteClaim(id);
+    }
+
 
 }

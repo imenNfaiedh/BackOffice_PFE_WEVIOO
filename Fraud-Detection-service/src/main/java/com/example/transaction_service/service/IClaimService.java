@@ -18,4 +18,6 @@ public interface IClaimService {
 
     ClaimDto getClaimById(Long id);
 
+    void deleteClaim(Long id);
+
 }

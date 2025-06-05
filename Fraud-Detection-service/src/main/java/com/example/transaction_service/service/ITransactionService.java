@@ -14,4 +14,5 @@ public interface ITransactionService {
     void deleteTransaction (Long id);
 
     public List<TransactionDto> getTransactionsForCurrentUser(String keycloakId);
+
 }
