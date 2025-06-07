@@ -18,12 +18,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class OAuth2ResourceServerConfig {
 
     private static final String[] AUTH_WHITELIST = {
+            "/userss/me",
             "/cards", //
             "/banks",
             "/accounts",
             "/transactions",
             "/users",
-            "/users/me"
+
 
     };
     @Bean
@@ -43,6 +44,7 @@ public class OAuth2ResourceServerConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
+                               // .requestMatchers("/userss/me").authenticated() // ✅ ICI le vrai changement
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer ->

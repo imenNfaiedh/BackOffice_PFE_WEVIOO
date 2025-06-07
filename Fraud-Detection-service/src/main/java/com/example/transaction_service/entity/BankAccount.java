@@ -1,6 +1,7 @@
 package com.example.transaction_service.entity;
 
 import com.example.transaction_service.enumeration.TypeBankAccount;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public class BankAccount implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "bank_id")
+    @JsonIgnore
     private Bank bank;
 
     @OneToMany (mappedBy = "bankAccount")

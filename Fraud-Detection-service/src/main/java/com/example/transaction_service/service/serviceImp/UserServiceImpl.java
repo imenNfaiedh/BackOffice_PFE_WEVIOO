@@ -101,7 +101,7 @@ public class UserServiceImpl implements IUserService {
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
         String setSuspicious_activity = jwt.getClaimAsString("suspicious_activity");
-        String tel = jwt.getClaimAsString("phone number");
+        String tel = jwt.getClaimAsString("phone_number");
 
         // Récupérer les rôles de l'utilisateur à partir du token
         List<String> roles = jwt.getClaim("realm_access") != null

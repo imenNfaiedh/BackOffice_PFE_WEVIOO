@@ -32,8 +32,8 @@ public class ClaimServiceImp implements IClaimService {
         claim.setDateReclamation(LocalDateTime.now());
         claim.setStatus("EN_ATTENTE");
         User user = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(()->   new NotFoundException("User with not found with id" + claim.getUser().getUserId()));
-        claim.setUser(user);
+                .orElseThrow(() -> new NotFoundException("User not found with keycloakId: " + keycloakId));
+
         Claim claimSaved = claimRepository.save(claim);
         return claimMapper.toDto(claimSaved);
     }

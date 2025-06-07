@@ -1,6 +1,7 @@
 package com.example.transaction_service.entity;
 
 import com.example.transaction_service.enumeration.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,9 +42,11 @@ public class User implements Serializable {
     private UserRole role;
 
     @OneToMany (mappedBy = "user")
+    @JsonIgnore
     private List<BankAccount> bankAccounts;
 
     @OneToMany (mappedBy = "user")
+    @JsonIgnore
     private List<Claim> claims;
 
 
