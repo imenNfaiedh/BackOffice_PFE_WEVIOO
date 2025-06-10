@@ -63,16 +63,22 @@ public class BankAccountController {
         Optional<BankAccount> optional = bankAccountRepository.findById(id);
         if (optional.isPresent()) {
             BankAccount account = optional.get();
-            account.setIsBlocked(!account.getIsBlocked());  //on inverse  la valeur actuelle du champ isBlocked
+            boolean wasBlocked = account.getIsBlocked();
+            account.setIsBlocked(!wasBlocked);  // Inverse l'état actuel
+            if (wasBlocked) {
+                // Si le compte était bloqué et on le débloque, on remet fraudCount à 0
+                account.setFraudCount(0);
+            }
             bankAccountRepository.save(account);
             Map<String, Object> response = new HashMap<>();
-            response.put("message", account.getIsBlocked() ? "Compte bloqué." : "Compte débloqué.");
+            response.put("message", account.getIsBlocked() ? "Compte bloqué." : "Compte débloqué et compteur de fraudes réinitialisé.");
             response.put("isBlocked", account.getIsBlocked());
+            response.put("fraudCount", account.getFraudCount());
+
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.notFound().build();
     }
-
     @GetMapping("/count")
     public long countAccount() {
         return bankAccountRepository.count();
