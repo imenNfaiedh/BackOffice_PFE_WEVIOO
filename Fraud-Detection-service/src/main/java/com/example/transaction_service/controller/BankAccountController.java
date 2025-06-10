@@ -12,7 +12,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
@@ -54,6 +57,20 @@ public class BankAccountController {
     {
         bankAccountDto.setBankAccountId(id);
         return bankAccountService.updateAccount(bankAccountDto,id);
+    }
+    @PutMapping("/toggle-block/{id}")
+    public ResponseEntity<Map<String, Object>> toggleBlockStatus(@PathVariable Long id) {
+        Optional<BankAccount> optional = bankAccountRepository.findById(id);
+        if (optional.isPresent()) {
+            BankAccount account = optional.get();
+            account.setIsBlocked(!account.getIsBlocked());  //on inverse  la valeur actuelle du champ isBlocked
+            bankAccountRepository.save(account);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", account.getIsBlocked() ? "Compte bloqué." : "Compte débloqué.");
+            response.put("isBlocked", account.getIsBlocked());
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/count")
