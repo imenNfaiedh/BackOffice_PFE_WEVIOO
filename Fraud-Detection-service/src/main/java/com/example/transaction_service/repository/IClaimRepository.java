@@ -11,4 +11,6 @@ public interface IClaimRepository extends JpaRepository<Claim,Long> {
     List<Claim> findByUser_UserId(Long userId);
 
     List<Claim> findByUser_keycloakId(String user_keycloakId );
+
+    long countByStatus(String status);
 }

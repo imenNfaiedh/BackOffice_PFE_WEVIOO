@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -24,6 +25,7 @@ public class OAuth2ResourceServerConfig {
             "/accounts",
             "/transactions",
             "/users",
+            "/ws"
 
 
     };
@@ -53,5 +55,7 @@ public class OAuth2ResourceServerConfig {
                 );
         return http.build();
     }
+
+
 
 }

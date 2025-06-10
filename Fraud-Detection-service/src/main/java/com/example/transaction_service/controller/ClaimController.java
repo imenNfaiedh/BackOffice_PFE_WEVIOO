@@ -67,7 +67,6 @@ public class ClaimController {
     @DeleteMapping("{id}")
     public void deleteClaim(@PathVariable Long id)
     {
-
          claimService.deleteClaim(id);
     }
 

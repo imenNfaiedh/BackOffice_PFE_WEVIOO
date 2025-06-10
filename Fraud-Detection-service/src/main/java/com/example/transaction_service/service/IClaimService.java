@@ -2,6 +2,7 @@ package com.example.transaction_service.service;
 
 import com.example.transaction_service.dto.ClaimDto;
 import com.example.transaction_service.dto.ClaimResponseDto;
+import com.example.transaction_service.dto.ClaimStatsDto;
 import com.example.transaction_service.entity.Claim;
 
 import java.util.List;
@@ -19,5 +20,6 @@ public interface IClaimService {
     ClaimDto getClaimById(Long id);
 
     void deleteClaim(Long id);
+    public ClaimStatsDto getClaimStats();
 
 }
