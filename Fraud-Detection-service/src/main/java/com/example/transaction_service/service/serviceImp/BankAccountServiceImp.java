@@ -76,5 +76,11 @@ public class BankAccountServiceImp implements IBankAccountService {
     @Override
     public void deleteAccount(Long id) {
 
+            if (!bankAccountRepository.existsById(id)) {
+                throw new NotFoundException("Claim not found with ID: " + id);
+            }
+            bankAccountRepository.deleteById(id);
+        }
+
     }
-}
+

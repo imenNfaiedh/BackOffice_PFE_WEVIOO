@@ -38,7 +38,7 @@ spring:
           uri: http://localhost:8087
           predicates:
 
-            - Path=/userss/**,/accounts/**,/cards/**,/banks/**,/transactions/**,/api/dashboard/**,/claims/**
+            - Path=/userss/**,/accounts/**,/cards/**,/banks/**,/transactions/**,/api/dashboard/**,/claims/**,/exchange/**
             - Method=GET,POST,PUT,DELETE,OPTIONS
 
 # Configuration Eureka

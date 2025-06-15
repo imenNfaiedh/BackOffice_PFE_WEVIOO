@@ -107,7 +107,7 @@ public class TransactionServiceImpl  implements ITransactionService {
         debitTransaction.setTransactionDate(transactionDto.getTransactionDate());
         debitTransaction.setBankAccount(senderAccount);
         debitTransaction.setTransactionStatus(TransactionStatus.VALID);
-        debitTransaction.setTypeTransaction(TypeTransaction.TRANSFER);
+        debitTransaction.setTypeTransaction(TypeTransaction.DEBIT);
         debitTransaction.setIsSendNotification(Boolean.TRUE);
         transactionRepository.save(debitTransaction);
 
@@ -123,7 +123,7 @@ public class TransactionServiceImpl  implements ITransactionService {
         creditTransaction.setTransactionDate(transactionDto.getTransactionDate());
         creditTransaction.setBankAccount(receiverAccount);
         creditTransaction.setTransactionStatus(TransactionStatus.VALID);
-        creditTransaction.setTypeTransaction(TypeTransaction.TRANSFER);
+        creditTransaction.setTypeTransaction(TypeTransaction.CREDIT);
         transactionRepository.save(creditTransaction);
 
         // Mise à jour du solde bénéficiaire

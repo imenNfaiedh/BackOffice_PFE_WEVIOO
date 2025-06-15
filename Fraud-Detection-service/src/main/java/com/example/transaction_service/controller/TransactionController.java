@@ -10,7 +10,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/transactions")
@@ -63,6 +65,19 @@ public class TransactionController {
     {
 
         transactionService.deleteTransaction(id);
+    }
+
+    @GetMapping("/transactions-count-per-month")
+    public Map<String, Long> getTransactionsCountPerMonth() {
+        List<Object[]> results = transactionRepository.countTransactionsByMonth();
+
+        Map<String, Long> monthlyCounts = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            String month = ((String) row[0]).trim(); // " January " → "January"
+            Long count = (Long) row[1];
+            monthlyCounts.put(month, count);
+        }
+        return monthlyCounts;
     }
 
 }
