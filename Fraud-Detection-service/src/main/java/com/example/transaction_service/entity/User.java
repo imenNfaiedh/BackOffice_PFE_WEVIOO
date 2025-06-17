@@ -38,6 +38,17 @@ public class User implements Serializable {
     @Column(name = "FDS005_SUSPICIOUS_ACTIVITY")
     private Boolean suspicious_activity;
 
+    @Column(name = "FDS005_CIN")
+    private String cin;
+
+    @Column(name = "FDS005_ADDRESS")
+    private String address;
+    @Column(name = "FDS005_USERNAME")
+    private String userName;
+    @Column(name = "FDS005_URL_IMAGE")
+    private String profileImageUrl;
+
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 

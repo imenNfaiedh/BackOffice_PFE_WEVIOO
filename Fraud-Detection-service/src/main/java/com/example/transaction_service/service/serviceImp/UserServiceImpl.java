@@ -77,18 +77,23 @@ public class UserServiceImpl implements IUserService {
         user.setTel(userDto.getTel());
         user.setLastName(userDto.getLastName());
         user.setFirstName(userDto.getFirstName());
-        //user.getSuspicious_activity(userDto.getSuspicious_activity());
-
-
+        user.setCin(userDto.getCin());        // ajout
+        user.setAddress(userDto.getAddress()); // ajout
+        user.setUserName(userDto.getUserName());
+        // user.setSuspicious_activity(userDto.getSuspicious_activity());
 
         return userMapper.toDto(userRepository.save(user));
-
     }
 
     @Override
     public void deleteUser(Long id) {
-
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User not found with ID: " + id);
+        }
+        userRepository.deleteById(id);
     }
+
+
 
 
 
@@ -100,6 +105,7 @@ public class UserServiceImpl implements IUserService {
         String email = jwt.getClaimAsString("email");
         String firstName = jwt.getClaimAsString("given_name");
         String lastName = jwt.getClaimAsString("family_name");
+        String userName = jwt.getClaimAsString("preferred_username");
         String setSuspicious_activity = jwt.getClaimAsString("suspicious_activity");
         String tel = jwt.getClaimAsString("phone_number");
 
@@ -131,6 +137,7 @@ public class UserServiceImpl implements IUserService {
                     user.setLastName(lastName);
                     user.setRole(userRole);
                     user.setTel(tel);
+                    user.setUserName(userName);
                     user.setSuspicious_activity(Boolean.valueOf(setSuspicious_activity));
                     log.info("Saving user: {}", user);
                     // Sauvegarder dans la base de données

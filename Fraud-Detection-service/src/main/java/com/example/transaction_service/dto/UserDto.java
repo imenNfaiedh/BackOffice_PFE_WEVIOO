@@ -20,6 +20,11 @@ public class UserDto {
     private String email;
     private String tel;
     private Boolean suspicious_activity;
+    private String cin;
+    private String address;
+    private String userName;
+    private String profileImageUrl;
+
 
     @Enumerated(EnumType.STRING)
     private UserRole role;

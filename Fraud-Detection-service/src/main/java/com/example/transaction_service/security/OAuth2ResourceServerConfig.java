@@ -46,7 +46,6 @@ public class OAuth2ResourceServerConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                               // .requestMatchers("/userss/me").authenticated() // ✅ ICI le vrai changement
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer ->

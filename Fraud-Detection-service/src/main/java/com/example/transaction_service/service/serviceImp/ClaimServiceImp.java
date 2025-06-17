@@ -26,7 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class ClaimServiceImp implements IClaimService {
-    private final SimpMessagingTemplate messagingTemplate;
+
     @Autowired
     private IClaimRepository claimRepository;
     @Autowired
@@ -90,19 +90,19 @@ public class ClaimServiceImp implements IClaimService {
 
         claim.setResponseAdmin(responseDto.getResponseAdmin());
         claim.setStatus("TRAITEE");
-        // 📢 Envoi de la notification via WebSocket
-        Map<String, Object> notif = new HashMap<>();
-        notif.put("title", "Réclamation traitée");
-        notif.put("message", "Votre réclamation a été traitée.");
-        notif.put("reclamationId", claim.getId());
-        notif.put("date", LocalDateTime.now().toString());
-
-
-        String userId = claim.getUser().getUserId().toString();
-
-
-        messagingTemplate.convertAndSendToUser(userId, "/queue/reclamation-alerts", notif);
-        log.info("Notification envoyée à l'utilisateur " + userId + " pour la réclamation : " + claimId);
+//        // 📢 Envoi de la notification via WebSocket
+//        Map<String, Object> notif = new HashMap<>();
+//        notif.put("title", "Réclamation traitée");
+//        notif.put("message", "Votre réclamation a été traitée.");
+//        notif.put("reclamationId", claim.getId());
+//        notif.put("date", LocalDateTime.now().toString());
+//
+//
+//        String userId = claim.getUser().getUserId().toString();
+//
+//
+//        messagingTemplate.convertAndSendToUser(userId, "/queue/reclamation-alerts", notif);
+//        log.info("Notification envoyée à l'utilisateur " + userId + " pour la réclamation : " + claimId);
 
 
 

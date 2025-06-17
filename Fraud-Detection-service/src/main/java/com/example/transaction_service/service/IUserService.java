@@ -13,7 +13,7 @@ public interface IUserService {
     UserDto getUserById (Long id);
     UserDto createUser (User user);
     UserDto updateUser (UserDto userDto  , Long id);
-    void deleteUser (Long id);
+    void deleteUser(Long id);
     public User getCurrentUser(Authentication authentication);
     List<BankAccountDto> getBankAccountsByUser(Long userId);
 }

@@ -7,12 +7,21 @@ import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("userss")
@@ -23,6 +32,13 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private IUserRepository userRepository;
+
+    @DeleteMapping("{id}")
+    public void deleteUser(@PathVariable Long id)
+    {
+
+        userService.deleteUser(id);
+    }
 
     @GetMapping("/me")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
@@ -49,11 +65,12 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
-    public  UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto)
-    {
-        userDto.setUserId(id);
-        return userService.updateUser(userDto,id);
+    @PutMapping("/me")
+    public ResponseEntity<UserDto> updateCurrentUser(@RequestBody UserDto userDto, Authentication authentication) {
+        User currentUser = userService.getCurrentUser(authentication);
+        userDto.setUserId(currentUser.getUserId());
+        UserDto updatedUser = userService.updateUser(userDto, currentUser.getUserId());
+        return ResponseEntity.ok(updatedUser);
     }
     @GetMapping("/count")
     public long countUser() {
@@ -70,5 +87,33 @@ public class UserController {
         }
         return ResponseEntity.ok(accounts);
     }
+    @PostMapping("/upload/{userId}")
+    public ResponseEntity<String> uploadImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
+        try {
+            Path uploadPath = Paths.get("C:/Users/Lenovo/Desktop/stagePfe/BackOffice_PFE/pfaMicros/uploads/images").toAbsolutePath().normalize();
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Mise à jour du champ image de l'utilisateur
+            Optional<User> optionalUser = userRepository.findById(userId);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.setProfileImageUrl("/uploads/images/" + fileName);
+                userRepository.save(user);
+            }
+
+            return ResponseEntity.ok("/uploads/images/" + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur d'upload");
+        }
+    }
+
 
 }
