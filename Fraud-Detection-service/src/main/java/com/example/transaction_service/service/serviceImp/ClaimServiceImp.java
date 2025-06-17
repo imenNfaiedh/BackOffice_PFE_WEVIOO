@@ -10,9 +10,12 @@ import com.example.transaction_service.mapper.IClaimMapper;
 import com.example.transaction_service.repository.IClaimRepository;
 import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IClaimService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,12 @@ public class ClaimServiceImp implements IClaimService {
     private IUserRepository userRepository;
     @Autowired
     private IClaimMapper claimMapper;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
     @Override
     public ClaimDto createClaimForConnectedUser(Claim claim, String keycloakId) {
         claim.setDateReclamation(LocalDateTime.now());
@@ -90,25 +99,26 @@ public class ClaimServiceImp implements IClaimService {
 
         claim.setResponseAdmin(responseDto.getResponseAdmin());
         claim.setStatus("TRAITEE");
-//        // 📢 Envoi de la notification via WebSocket
-//        Map<String, Object> notif = new HashMap<>();
-//        notif.put("title", "Réclamation traitée");
-//        notif.put("message", "Votre réclamation a été traitée.");
-//        notif.put("reclamationId", claim.getId());
-//        notif.put("date", LocalDateTime.now().toString());
-//
-//
-//        String userId = claim.getUser().getUserId().toString();
-//
-//
-//        messagingTemplate.convertAndSendToUser(userId, "/queue/reclamation-alerts", notif);
-//        log.info("Notification envoyée à l'utilisateur " + userId + " pour la réclamation : " + claimId);
 
+        // Envoyer notification au service Kafka
+        Map<String, Object> message = new HashMap<>();
+        message.put("email", claim.getUser().getEmail());
+        message.put("firstName", claim.getUser().getFirstName());
+        message.put("lastName", claim.getUser().getLastName());
 
+        message.put("subject", "📬 Réponse à votre réclamation");
+        message.put("content", responseDto.getResponseAdmin());
+
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            kafkaTemplate.send("claim-response-topic", jsonMessage);
+            log.info("📤 Kafka message sent: {}", jsonMessage);
+        } catch (JsonProcessingException e) {
+            log.error("❌ JSON serialization error", e);
+        }
 
         return claimMapper.toDto(claimRepository.save(claim));
-
-        }
+    }
 
 
     @Override

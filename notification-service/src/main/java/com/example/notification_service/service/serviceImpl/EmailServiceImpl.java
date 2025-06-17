@@ -29,26 +29,26 @@ public class EmailServiceImpl implements EmailService {
     private SpringTemplateEngine templateEngine;
     @Value("${spring.mail.username}") private String sender;
 
-    public String sendHtmlMailWithTemplate(EmailDetails details, Map<String, Object> model) {
+    public String sendHtmlMailWithTemplate(EmailDetails details, Map<String, Object> model, String templateName) {
         try {
-            //Context contient les variables Thymeleaf
             Context context = new Context();
             context.setVariables(model);
-            String htmlContent = templateEngine.process("fraud-alert", context);
+            String htmlContent = templateEngine.process(templateName, context); // ici le nom du template
 
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            //Remplir les infos de l’email
+
             helper.setFrom(sender);
             helper.setTo(details.getRecipient());
             helper.setSubject(details.getSubject());
-            helper.setText(htmlContent, true); // true = HTML
+            helper.setText(htmlContent, true); // true pour HTML
 
             javaMailSender.send(mimeMessage);
-            return " Mail Sent Successfully";
-        } catch (Exception e) {
+            return "Mail Sent Successfully";
+        }  catch (Exception e) {
+            System.out.println("❌ Erreur Thymeleaf ou envoi : " + e.getMessage());
+            e.printStackTrace();
             return "Error while sending HTML email";
-
         }
     }
 
@@ -67,9 +67,12 @@ public class EmailServiceImpl implements EmailService {
         }
 
         catch (Exception e) {
-            return "Error while Sending Mail";
+            System.out.println("❌ Erreur Thymeleaf ou envoi : " + e.getMessage());
+            e.printStackTrace();
+            return "Error while sending HTML email";
         }
     }
+
 
 
     public String

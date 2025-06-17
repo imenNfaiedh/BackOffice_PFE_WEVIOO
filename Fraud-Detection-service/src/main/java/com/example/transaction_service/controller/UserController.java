@@ -90,7 +90,13 @@ public class UserController {
     @PostMapping("/upload/{userId}")
     public ResponseEntity<String> uploadImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         try {
-            Path uploadPath = Paths.get("C:/Users/Lenovo/Desktop/stagePfe/BackOffice_PFE/pfaMicros/uploads/images").toAbsolutePath().normalize();
+            // Vérification type MIME
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body("Seuls les fichiers images sont autorisés.");
+            }
+
+            Path uploadPath = Paths.get("C:/Users/Lenovo/Desktop/stagePfe/BackOffice_PFE/pfaMicros/Fraud-Detection-service/images").toAbsolutePath().normalize();
 
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
@@ -100,20 +106,27 @@ public class UserController {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Mise à jour du champ image de l'utilisateur
             Optional<User> optionalUser = userRepository.findById(userId);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                user.setProfileImageUrl("/uploads/images/" + fileName);
+
+                // Supprimer ancienne image (optionnel)
+                if (user.getProfileImageUrl() != null) {
+                    Path oldImage = uploadPath.resolve(Paths.get(user.getProfileImageUrl()).getFileName());
+                    Files.deleteIfExists(oldImage);
+                }
+
+                user.setProfileImageUrl("/images/" + fileName);
                 userRepository.save(user);
             }
 
-            return ResponseEntity.ok("/uploads/images/" + fileName);
+            return ResponseEntity.ok("/images/" + fileName);
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur d'upload");
         }
     }
+
 
 
 }

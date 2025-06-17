@@ -7,54 +7,87 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f6f8;
-            color: #333;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
         }
 
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .email-container {
+            background-color: #ffffff;
+            width: 80%;
             max-width: 600px;
-            margin: auto;
+            margin: 30px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        h2 {
+        .email-header {
+            background-color: #e0f0ff;
+            padding: 20px;
+            text-align: center;
+            color: #004080;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .email-body {
+            padding: 20px;
+            color: #333;
+        }
+
+        .email-body h2 {
             color: #d32f2f;
         }
 
-        ul {
+        .email-body ul {
             list-style-type: none;
             padding: 0;
         }
 
-        li {
+        .email-body li {
             padding: 8px 0;
+            font-size: 15px;
         }
 
-        strong {
+        .email-body strong {
             color: #555;
+            display: inline-block;
+            width: 120px;
         }
 
-        .footer {
-            margin-top: 30px;
+        .email-footer {
+            padding: 20px;
             font-size: 0.9em;
             color: #777;
+            background-color: #f8f8f8;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Bonjour <span th:text="${firstName}">Client</span>,</h2>
-    <p>🚨 Une activité suspecte a été détectée sur votre compte :</p>
-    <ul>
-        <li><strong>💸 Montant :</strong> <span th:text="${amount}">0.00</span> €</li>
-        <li><strong>🌍 Pays :</strong> <span th:text="${country}">Pays inconnu</span></li>
-        <li><strong>❗ Raison :</strong> <span th:text="${reason}">Raison inconnue</span></li>
-    </ul>
-    <p>Merci de vérifier cette activité ou de contacter notre service client.</p>
-    <p class="footer">Ceci est un message automatique. Ne pas répondre à cet e-mail.</p>
+<div class="email-container">
+    <div class="email-header">
+        <h1>🚨 Alerte de Fraude Détectée</h1>
+    </div>
+
+    <div class="email-body">
+        <h2>Bonjour <span th:text="${firstName}">Client</span>,</h2>
+        <p>Une activité suspecte a été détectée sur votre compte :</p>
+        <ul>
+            <li><strong>💸 Montant :</strong> <span th:text="${amount}">0.00</span> €</li>
+            <li><strong>🌍 Pays :</strong> <span th:text="${country}">Pays inconnu</span></li>
+            <li><strong>❗ Raison :</strong> <span th:text="${reason}">Raison inconnue</span></li>
+        </ul>
+        <p>Merci de vérifier cette activité ou de contacter notre service client dès que possible.</p>
+    </div>
+
+    <div class="email-footer">
+        <p>Ceci est un message automatique. Ne répondez pas à cet e-mail.</p>
+        <p>Service de Sécurité – Votre Banque</p>
+    </div>
 </div>
 </body>
 </html>

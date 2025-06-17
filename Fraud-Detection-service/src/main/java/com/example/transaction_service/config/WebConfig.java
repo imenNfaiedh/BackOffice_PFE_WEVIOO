@@ -11,9 +11,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String uploadDir = Paths.get("C:/Users/Lenovo/Desktop/stagePfe/BackOffice_PFE/pfaMicros/uploads/images").toAbsolutePath().normalize().toUri().toString();
+        String uploadDir = Paths.get("C:/Users/Lenovo/Desktop/stagePfe/BackOffice_PFE/pfaMicros/Fraud-Detection-service/images")
+                .toAbsolutePath()
+                .normalize()
+                .toString() + "/";
 
-        registry.addResourceHandler("/uploads/images/**")
-                .addResourceLocations(uploadDir);
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:" + uploadDir);
     }
 }

@@ -39,6 +39,8 @@ public class KafkaFraudListener {
 
             String email = user.path("email").asText();
             String firstName = user.path("firstName").asText();
+            String lastName = user.path("lastName").asText();
+
             Double amount = jsonNode.path("amount").asDouble();
             String country = jsonNode.path("country").asText();
             String reason = jsonNode.path("reason").asText();
@@ -50,24 +52,25 @@ public class KafkaFraudListener {
 
             //create model utilisé dans le template HTML de l’e-mail.
             Map<String, Object> model = new HashMap<>();
+            model.put("lastName", lastName);
             model.put("firstName", firstName);
+
             model.put("amount", amount);
             model.put("country", country);
             model.put("reason", reason);
 
             // Envoi de l'e-mail HTML
-            String result = emailService.sendHtmlMailWithTemplate(emailDetails, model);
+            String result = emailService.sendHtmlMailWithTemplate(emailDetails, model,"fraud-alert");
             log.info("📬 Résultat de l'envoi de l'e-mail : {}", result);
             // envoyer via websocket
             messagingTemplate.convertAndSend("/topic/fraud-alerts", model);
-
-
             log.info("📢 Notification WebSocket envoyée : {}", model);
 
 
         } catch (Exception e) {
-            log.error(" Erreur lors du traitement du message Kafka pour l'envoi de l'e-mail", e);
+            log.error("Erreur lors de l'envoi du mail HTML : {}", e.getMessage(), e);
         }
+
     }
 
 

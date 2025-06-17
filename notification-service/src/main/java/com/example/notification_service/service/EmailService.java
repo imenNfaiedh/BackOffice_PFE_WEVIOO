@@ -8,5 +8,5 @@ public interface EmailService {
 
     String sendSimpleMail(EmailDetails details);
     String sendMailWithAttachment(EmailDetails details);
-    public String sendHtmlMailWithTemplate(EmailDetails details, Map<String, Object> model);
+    public String sendHtmlMailWithTemplate(EmailDetails details, Map<String, Object> model,String templateName);
 }
