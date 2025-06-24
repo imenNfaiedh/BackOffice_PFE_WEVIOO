@@ -1,0 +1,33 @@
+spring:
+  mail:
+    username: imennfaidh8@gmail.com
+    host: smtp.gmail.com
+    port: '587'
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          auth: 'true'
+    password: mzwj tigg wvlz ddnq
+  kafka:
+    consumer:
+      group-id: notification-group
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  application:
+    name: notification-service
+  thymeleaf:
+    cache: 'false'
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+eureka:
+  client:
+    register-with-eureka: 'true'
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: '8099'
