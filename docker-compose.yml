@@ -6,9 +6,9 @@ services:
     container_name: config-service
     ports:
       - '8888:8888'
-
     networks:
       - microservices-net
+
 
   eureka-service:
     build: ./eureka-service
@@ -17,9 +17,11 @@ services:
       - '8761:8761'
     depends_on:
       - config-service
-
+    environment:
+      - CONFIG_SERVER_URL=http://config-service:8888
     networks:
       - microservices-net
+
 
   gateway-service:
     build: ./gateway-service
@@ -32,6 +34,9 @@ services:
 
     networks:
       - microservices-net
+    environment:
+      - CONFIG_SERVER_URL=http://config-service:8888
+
 
   user-service:
     build: ./user-service
@@ -44,6 +49,9 @@ services:
 
     networks:
       - microservices-net
+    environment:
+      - CONFIG_SERVER_URL=http://config-service:8888
+
 
   fraud-detection-service:
     build: ./Fraud-Detection-service
@@ -56,6 +64,9 @@ services:
 
     networks:
       - microservices-net
+    environment:
+      - CONFIG_SERVER_URL=http://config-service:8888
+
 
   notification-service:
     build: ./notification-service
@@ -124,3 +135,4 @@ services:
 
 networks:
   microservices-net:
+    driver: bridge
