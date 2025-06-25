@@ -82,10 +82,17 @@ services:
 
   db:
     image: postgres:15
+    container_name: db
     environment:
       POSTGRES_DB: pfe_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 0000
+      PGDATA: /data/postgres
+      LISTEN_ADDRESSES: '*'
+    volumes:
+      - ./postgres-data/:/data/postgres/
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
     ports:
       - "5432:5432"
     networks:
