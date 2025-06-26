@@ -6,6 +6,11 @@ services:
     container_name: config-service
     ports:
       - '8888:8888'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      retries: 4
+
     networks:
       - microservices-net
 
@@ -19,6 +24,10 @@ services:
       - config-service
     environment:
       - CONFIG_SERVER_URL=http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      retries: 4
     networks:
       - microservices-net
 
@@ -35,7 +44,12 @@ services:
     networks:
       - microservices-net
     environment:
+      - EUREKA_URL=http://eureka-service:8761/eureka
       - CONFIG_SERVER_URL=http://config-service:8888
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=spring-micro-main
+      - USER_SERVICE_URL=http://user-service:8090
+      - FRAUD_SERVICE_URL=http://fraud-detection-service:8087
 
 
   user-service:
@@ -51,6 +65,7 @@ services:
       - microservices-net
     environment:
       - CONFIG_SERVER_URL=http://config-service:8888
+      - EUREKA_URL=http://eureka-service:8761/eureka
 
 
   fraud-detection-service:
@@ -61,11 +76,16 @@ services:
     depends_on:
       - eureka-service
       - config-service
+      - db
+      - kafka
 
     networks:
       - microservices-net
     environment:
       - CONFIG_SERVER_URL=http://config-service:8888
+      - EUREKA_URL=http://eureka-service:8761/eureka
+      - DB_HOST=db
+      - KAFKA_SERVERS=kafka:29092
 
 
   notification-service:
@@ -79,19 +99,23 @@ services:
 
     networks:
       - microservices-net
+    environment:
+      - CONFIG_SERVER_URL=http://config-service:8888
+      - EUREKA_URL=http://eureka-service:8761/eureka
 
   db:
     image: postgres:15
     container_name: db
     environment:
       POSTGRES_DB: pfe_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 0000
+      POSTGRES_USER: wevioo
+      POSTGRES_PASSWORD: Wevioo@2024++
       PGDATA: /data/postgres
       LISTEN_ADDRESSES: '*'
     volumes:
       - ./postgres-data/:/data/postgres/
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    command: ["postgres", "-c", "wal_level=logical", "-c", "max_replication_slots=4", "-c", "max_wal_senders=4"]
 
     ports:
       - "5432:5432"
@@ -118,24 +142,62 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
+    healthcheck:
+        test: echo stat | nc localhost 2181
+        interval: 10s
+        timeout: 5s
+        retries: 5
     networks:
       - microservices-net
 
   kafka:
-    image: confluentinc/cp-kafka:7.6.0
+    image: confluentinc/cp-kafka:7.4.0
     container_name: kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy  # This ensures Zookeeper is fully initialized
     ports:
       - "9092:9092"
+      - "29092:29092"  # Add this line
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    hostname: kafka
     networks:
       - microservices-net
+    healthcheck:
+      test: [ "CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+
+
+  debezium-connect:
+    image: debezium/connect:2.5
+    container_name: debezium-connect
+    depends_on:
+      - kafka
+      - db
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092  # Changed from localhost:9092 to use the service name
+      GROUP_ID: debezium-cluster
+      CONFIG_STORAGE_TOPIC: debezium_configs
+      OFFSET_STORAGE_TOPIC: debezium_offsets
+      STATUS_STORAGE_TOPIC: debezium_status
+      ENABLE_APICURIO_CONVERTERS: "true"  # Active le support Schema Registry
+    networks:
+      - microservices-net
+    restart: unless-stopped
 
 
 
