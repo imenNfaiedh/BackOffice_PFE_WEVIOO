@@ -2,14 +2,17 @@ package com.example.transaction_service.service.serviceImp;
 
 import com.example.transaction_service.dto.BankAccountDto;
 import com.example.transaction_service.entity.BankAccount;
+import com.example.transaction_service.entity.User;
 import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.mapper.IBankAccountMapper;
 import com.example.transaction_service.repository.IBankAccountRepository;
+import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IBankAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -20,6 +23,8 @@ public class BankAccountServiceImp implements IBankAccountService {
     private IBankAccountRepository bankAccountRepository;
     @Autowired
     private IBankAccountMapper bankAccountMapper;
+    @Autowired
+    private IUserRepository userRepository;
 
 
 
@@ -49,9 +54,28 @@ public class BankAccountServiceImp implements IBankAccountService {
     }
 
     @Override
-    public BankAccountDto createAccount(BankAccount bankAccount) {
+    public BankAccountDto createAccount(BankAccountDto dto) {
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + dto.getUserId()));
+
+
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.setAccountNumber(generateAccountNumber()); // Auto-généré
+        bankAccount.setBalance(dto.getBalance());
+        bankAccount.setOpeningDate(new Date());
+        bankAccount.setFraudCount(0);
+        bankAccount.setIsBlocked(false);
+        bankAccount.setTypeBankAccount(dto.getTypeBankAccount());
+        bankAccount.setUser(user);
+
         bankAccount = bankAccountRepository.save(bankAccount);
+
         return bankAccountMapper.toDto(bankAccount);
+    }
+
+    private Long generateAccountNumber() {
+        return 1_000_0000L + (long)(Math.random() * 9_000_0000L); // numéro à 8 chiffres
     }
 
     @Override
