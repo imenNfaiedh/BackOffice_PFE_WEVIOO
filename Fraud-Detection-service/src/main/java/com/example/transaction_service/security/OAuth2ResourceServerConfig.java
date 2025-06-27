@@ -31,7 +31,9 @@ public class OAuth2ResourceServerConfig {
     };
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri("http://localhost:8080/realms/spring-micro-main/protocol/openid-connect/certs").build();
+     //   return NimbusJwtDecoder.withJwkSetUri("http://localhost:8080/realms/spring-micro-main/protocol/openid-connect/certs").build();
+        return NimbusJwtDecoder.withJwkSetUri("http://keycloak:8080/realms/spring-micro-main/protocol/openid-connect/certs").build();
+
     }
 
     @Bean

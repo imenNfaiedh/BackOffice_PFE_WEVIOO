@@ -13,3 +13,4 @@ CREATE USER debezium WITH REPLICATION PASSWORD 'debezium';
 \c pfe_db
 GRANT SELECT ON public.fds004t_transaction TO debezium;
 CREATE PUBLICATION debezium_publication FOR TABLE public.fds004t_transaction;
+

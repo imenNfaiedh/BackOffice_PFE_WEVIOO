@@ -2,14 +2,17 @@ package com.example.transaction_service.service.serviceImp;
 
 import com.example.transaction_service.dto.BankAccountDto;
 import com.example.transaction_service.entity.BankAccount;
+import com.example.transaction_service.entity.User;
 import com.example.transaction_service.exception.NotFoundException;
 import com.example.transaction_service.mapper.IBankAccountMapper;
 import com.example.transaction_service.repository.IBankAccountRepository;
+import com.example.transaction_service.repository.IUserRepository;
 import com.example.transaction_service.service.IBankAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 @Service

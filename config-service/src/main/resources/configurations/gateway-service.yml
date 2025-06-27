@@ -6,7 +6,10 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/${KEYCLOAK_REALM:spring-micro-main}/protocol/openid-connect/certs
+#          issuer-uri: http://keycloak:8080/realms/spring-micro-main
+
+            jwk-set-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/${KEYCLOAK_REALM:spring-micro-main}/protocol/openid-connect/certs
+
 
 
   cloud:

@@ -4,6 +4,7 @@ import com.example.transaction_service.dto.TransactionDto;
 import com.example.transaction_service.entity.Transaction;
 import com.example.transaction_service.repository.ITransactionRepository;
 import com.example.transaction_service.service.ITransactionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/transactions")
+@Slf4j
 public class TransactionController {
 
     @Autowired
@@ -28,6 +30,7 @@ public class TransactionController {
     public List<TransactionDto> getAllTransaction ()
     {
 
+        log.info("start get all transaction  .......");
         return transactionService.getAllTransaction();
     }
 
