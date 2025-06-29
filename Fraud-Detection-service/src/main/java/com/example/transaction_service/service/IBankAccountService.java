@@ -10,7 +10,8 @@ public interface IBankAccountService {
     List<BankAccountDto> getAllAccount();
 
     BankAccountDto getAccountById(Long id);
-    BankAccountDto createAccount(BankAccount bankAccount);
+    public BankAccountDto createAccount(BankAccountDto dto)    ;
+
     BankAccountDto updateAccount (BankAccountDto bankAccountDto, Long id);
     void deleteAccount (Long id);
 

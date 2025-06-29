@@ -23,6 +23,8 @@ public class BankAccountServiceImp implements IBankAccountService {
     private IBankAccountRepository bankAccountRepository;
     @Autowired
     private IBankAccountMapper bankAccountMapper;
+    @Autowired
+    private IUserRepository userRepository;
 
 
 
@@ -52,9 +54,28 @@ public class BankAccountServiceImp implements IBankAccountService {
     }
 
     @Override
-    public BankAccountDto createAccount(BankAccount bankAccount) {
+    public BankAccountDto createAccount(BankAccountDto dto) {
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + dto.getUserId()));
+
+
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.setAccountNumber(generateAccountNumber()); // Auto-généré
+        bankAccount.setBalance(dto.getBalance());
+        bankAccount.setOpeningDate(new Date());
+        bankAccount.setFraudCount(0);
+        bankAccount.setIsBlocked(false);
+        bankAccount.setTypeBankAccount(dto.getTypeBankAccount());
+        bankAccount.setUser(user);
+
         bankAccount = bankAccountRepository.save(bankAccount);
+
         return bankAccountMapper.toDto(bankAccount);
+    }
+
+    private Long generateAccountNumber() {
+        return 1_000_0000L + (long)(Math.random() * 9_000_0000L); // numéro à 8 chiffres
     }
 
     @Override

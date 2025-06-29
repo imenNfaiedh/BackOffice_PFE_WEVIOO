@@ -13,6 +13,8 @@ import java.util.List;
 public interface IBankAccountMapper {
     @Mapping(source = "user.firstName", target = "userFirstName")
     @Mapping(source = "user.lastName", target = "userLastName")
+    @Mapping(source = "user.userId", target = "userId")
+
     BankAccountDto toDto (BankAccount bankAccount);
     List<BankAccountDto> toDto(List<BankAccount> bankAccounts);
    List<BankAccount>  toEntity (List<BankAccountDto> bankAccountDtoList);

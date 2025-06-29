@@ -28,4 +28,7 @@ public class BankAccountDto {
 
     private String userFirstName;
     private String userLastName;
+    private Long userId;
+
+
 }

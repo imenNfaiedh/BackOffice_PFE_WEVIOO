@@ -45,9 +45,8 @@ public class BankAccountController {
     }
 
     @PostMapping("")
-    public BankAccountDto createAccount (@RequestBody BankAccount bankAccount)
-    {
-        return bankAccountService.createAccount(bankAccount);
+    public BankAccountDto createAccount(@RequestBody BankAccountDto dto) {
+        return bankAccountService.createAccount(dto);
     }
 
     @PutMapping("{id}")
