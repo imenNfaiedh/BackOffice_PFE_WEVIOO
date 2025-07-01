@@ -6,6 +6,7 @@ pipeline {
     }
 
     stages {
+        
         stage("Clean up") {
             steps {
                 deleteDir() // Nettoyer le workspace avant de commencer
@@ -17,5 +18,17 @@ pipeline {
                 checkout scm
             }
         }
+
+         stage("Build project") {
+            steps {
+                // Navigate to the project directory and build the Maven project
+                dir("${env.WORKSPACE}") {
+                    bat "mvn clean install"
+                }
+            }
+        }
+
+
+        
     }
 }
