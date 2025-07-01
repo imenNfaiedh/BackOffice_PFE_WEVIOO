@@ -9,7 +9,7 @@ pipeline {
             steps {
                 deleteDir() // Clean up the workspace before starting
             }
-        }
+        }}
        stage("Checkout SCM") {
             steps {
 
