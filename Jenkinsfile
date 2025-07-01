@@ -1,10 +1,20 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'nodejs' // Nom de l'installation NodeJS dans Jenkins
-        
-        
-    }
+     tools {
+        maven 'install maven' // Define Maven tool to be used
+          }
+  stages {
+        stage("Clean up") {
+            steps {
+                deleteDir() // Clean up the workspace before starting
+            }
+        }
+       stage("Checkout SCM") {
+            steps {
 
+                checkout scm
+
+            }
+        }
 }
