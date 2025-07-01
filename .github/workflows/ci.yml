@@ -29,11 +29,11 @@ jobs:
 
       # Build the  Test unitaire
       - name: Build the  Test unitaire
-        run: ./mvnw  test
+        run: mvn  test
 
       # Build the Spring Boot application
       - name: Build Spring Boot JAR
-        run: ./mvnw clean  install -DskipTests
+        run:  mvn clean  install -DskipTests
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
