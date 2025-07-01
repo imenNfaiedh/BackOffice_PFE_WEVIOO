@@ -22,6 +22,7 @@ services:
       - '8761:8761'
     depends_on:
       - config-service
+
     environment:
       - CONFIG_SERVER_URL=http://config-service:8888
     healthcheck:
@@ -37,6 +38,8 @@ services:
     container_name: gateway-service
     ports:
       - '8085:8085'
+
+
     depends_on:
       - eureka-service
       - config-service
@@ -85,7 +88,7 @@ services:
       - CONFIG_SERVER_URL=http://config-service:8888
       - EUREKA_URL=http://eureka-service:8761/eureka
       - DB_HOST=db
-      - KAFKA_SERVERS=kafka:29092
+      - KAFKA_SERVERS=kafka:9092
 
 
   notification-service:

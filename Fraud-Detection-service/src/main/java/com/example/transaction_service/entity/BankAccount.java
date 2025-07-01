@@ -3,10 +3,7 @@ package com.example.transaction_service.entity;
 import com.example.transaction_service.enumeration.TypeBankAccount;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "FDS002T_BANK_ACCOUNT")
+@ToString
 public class BankAccount implements Serializable {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)

@@ -42,9 +42,14 @@ public class ProcessService {
 
 
     public void startProcess(Map<String, Object> data) {
+        if (data == null || data.isEmpty()) {
+            log.error("Données reçues null ou vides. Annulation du traitement.");
+            return;
+        }
+
         try {
             log.info("Processus déclenché avec données : {}", data);
-
+            log.info("aaaaaa", data.get("fds004_amount"));
             Integer transactionIdInteger = (Integer) data.get("fds004_transaction_id");
             Long transactionId = transactionIdInteger != null ? transactionIdInteger.longValue() : null;
             //get amount & decode du base 16->2
@@ -61,6 +66,7 @@ public class ProcessService {
                 log.error("user not found ");
                 throw new NotFoundException("user not found");
             }
+            log.info("Valeur de isSendNotification : {}", transaction.getIsSendNotification());
            if(transaction.getIsSendNotification() != null &&  transaction.getIsSendNotification().equals(Boolean.TRUE)) {
 
                Long userId = user.getUserId();
@@ -85,6 +91,7 @@ public class ProcessService {
                    isFraudulent = true;
                }
 
+               log.info("is isFraudulent === :{} " , isFraudulent);
                if (isFraudulent) {
                    transaction.setTransactionStatus(TransactionStatus.SUSPICIOUS);
                    user.setSuspicious_activity(true);
@@ -122,6 +129,7 @@ public class ProcessService {
                    fraudResult.put("reason", String.join(" & ", reasons));
 
                    String fraudResultJson = objectMapper.writeValueAsString(fraudResult);
+                   log.info("start kafka send producer !!!!!");
                    kafkaProducer.sendFraudDetectionResult(fraudResultJson);
                    log.info("Transaction frauduleuse détectée et envoyée : {}", fraudResultJson);
                } else {
@@ -141,7 +149,9 @@ public class ProcessService {
 
     // Règle 1
     private boolean isHighAmount(BigDecimal amount, List<String> reasons) {
-        if (amount != null && amount.compareTo(BigDecimal.valueOf(3000)) > 0) {
+        log.info("amount : {}" , amount);
+        if (amount != null && amount.compareTo(BigDecimal.valueOf(3000)) >= 0) {
+            log.info("Montant supérieur à 3000");
             reasons.add("Montant supérieur à 3000");
             return true;
         }

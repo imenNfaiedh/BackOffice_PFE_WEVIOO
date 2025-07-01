@@ -23,9 +23,8 @@ public class TransactionDto {
     private BigDecimal amount;
     private String currency;
     private String country;
-
     private Date transactionDate;
-
+    private Boolean isSendNotification;
     @Enumerated(EnumType.STRING)
     private TypeTransaction typeTransaction;
 

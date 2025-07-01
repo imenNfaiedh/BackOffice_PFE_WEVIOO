@@ -27,15 +27,26 @@ public class TransactionChangeListener {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(message);
 
+            log.info("json : {}", json);
             // Extraire les données après la modification
-            JsonNode afterData = json.path("payload").path("after");
-            if (afterData != null) {
+          //  JsonNode afterData = json.path("payload").path("after");
+            JsonNode afterData = json .path("after");
+            log.info("after data : {}", afterData);
+            boolean b = afterData != null;
+            boolean isContainerNode = b && afterData.isContainerNode();
+            boolean z = b && !afterData.isEmpty();
+
+            log.info("afterData != null: {}", b);
+            log.info("afterData isContainerNode: {}", isContainerNode);
+            log.info("afterData is not empty: {}", z);
+
+            if (afterData != null  ) {
+                log.info( "after data === :{}", afterData.toString());
                 Map<String, Object> transactionDto = mapper.convertValue(afterData, Map.class);
                 log.info("Traitement des données après modification : {}", transactionDto);
-
                 processService.startProcess(transactionDto);
             } else {
-                log.warn("Données manquantes dans l'événement : {}", message);
+                log.warn("Champ 'after' manquant ou vide dans l'événement Kafka : {}", message);
             }
 
         } catch (Exception e) {

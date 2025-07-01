@@ -11,6 +11,7 @@ import com.example.transaction_service.service.IBankAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -35,7 +36,8 @@ public class BankAccountServiceImp implements IBankAccountService {
     }
     @Override
     public List<BankAccountDto> getAllAccount() {
-         List<BankAccount> bankAccounts= bankAccountRepository.findAll();
+        List<BankAccount> bankAccounts= bankAccountRepository.findAll();
+
         return bankAccountMapper.toDto(bankAccounts);
     }
 
@@ -54,6 +56,7 @@ public class BankAccountServiceImp implements IBankAccountService {
     }
 
     @Override
+    @Transactional
     public BankAccountDto createAccount(BankAccountDto dto) {
 
         User user = userRepository.findById(dto.getUserId())
@@ -68,8 +71,9 @@ public class BankAccountServiceImp implements IBankAccountService {
         bankAccount.setIsBlocked(false);
         bankAccount.setTypeBankAccount(dto.getTypeBankAccount());
         bankAccount.setUser(user);
-
+        log.info("before save  bank account {}", bankAccount.toString());
         bankAccount = bankAccountRepository.save(bankAccount);
+        log.info("after save  bank account {}", bankAccount.toString());
 
         return bankAccountMapper.toDto(bankAccount);
     }
