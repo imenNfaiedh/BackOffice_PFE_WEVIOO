@@ -23,7 +23,9 @@ pipeline {
             steps {
                 // Navigate to the project directory and build the Maven project
                 dir("${env.WORKSPACE}") {
-                   sh "mvn clean install -X"               }
+                   mvn clean test -Dspring.profiles.active=test
+              
+                }
             }
         }
 
