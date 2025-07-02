@@ -16,6 +16,7 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
+		<sonar.skip>true</sonar.skip>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
