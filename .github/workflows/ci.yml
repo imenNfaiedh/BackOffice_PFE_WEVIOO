@@ -26,9 +26,7 @@ jobs:
       # Analyse SonarCloud (should run after tests, before install -DskipTests)
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          organization: imenNfaiedh
-          projectKey: imenNfaiedh_BackOffice_PFE_WEVIOO
+
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: 'https://sonarcloud.io'
