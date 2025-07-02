@@ -35,11 +35,12 @@ jobs:
       - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn sonar:sonar \
-         -Dsonar.projectKey=imenNfaiedh_BackOffice_PFE_WEVIOO \
-         -Dsonar.organization=imenNfaiedh \
-         -Dsonar.host.url=https://sonarcloud.io \
-         -Dsonar.login=$SONAR_TOKEN
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=imenNfaiedh_BackOffice_PFE_WEVIOO \
+            -Dsonar.organization=imenNfaiedh \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN
 
 
         # Build the Spring Boot application
