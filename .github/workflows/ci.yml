@@ -52,10 +52,18 @@ jobs:
           docker tag backoffice_pfe_wevioo-config-service:latest ${{ secrets.DOCKER_USERNAME }}/config-service:latest
           docker tag backoffice_pfe_wevioo-eureka-service:latest ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
           docker tag backoffice_pfe_wevioo-gateway-service:latest ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
-
           docker tag backoffice_pfe_wevioo-fraud-detection-service:latest ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
           docker tag backoffice_pfe_wevioo-user-service:latest ${{ secrets.DOCKER_USERNAME }}/user-service:latest
           docker tag backoffice_pfe_wevioo-notification-service:latest ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
+                    
+          docker tag backoffice_pfe_wevioo-db:latest ${{ secrets.DOCKER_USERNAME }}/db:latest
+          docker tag backoffice_pfe_wevioo-keycloak:latest ${{ secrets.DOCKER_USERNAME }}/keycloak:latest
+          docker tag backoffice_pfe_wevioo-kafka:latest ${{ secrets.DOCKER_USERNAME }}/kafka:latest
+          docker tag backoffice_pfe_wevioo-zookeeper:latest ${{ secrets.DOCKER_USERNAME }}/zookeeper:latest
+          docker tag backoffice_pfe_wevioo-debezium-connect:latest ${{ secrets.DOCKER_USERNAME }}/debezium-connect:latest
+
+
+
 
 
           docker push ${{ secrets.DOCKER_USERNAME }}/config-service:latest
@@ -64,13 +72,21 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
+          
+          docker push ${{ secrets.DOCKER_USERNAME }}/db:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/keycloak:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/kafka:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/zookeeper:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/debezium-connect:latest
+      
+      
+      
+      
+      
+      
+      
 
-
-
-
-
-
-# Upload Artifact for deployment job (using v4)
+      # Upload Artifact for deployment job (using v4)
       - name: Upload Artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
