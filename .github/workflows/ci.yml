@@ -31,6 +31,8 @@ jobs:
           projectKey: imenNfaiedh_BackOffice_PFE_WEVIOO
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: 'https://sonarcloud.io'
+
 
       # Build Spring Boot JAR (skip tests, they already ran)
       - name: Build Spring Boot JAR
