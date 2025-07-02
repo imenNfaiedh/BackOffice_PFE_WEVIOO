@@ -49,7 +49,6 @@ jobs:
       # Push Docker image to Docker Hub
       - name: Push Docker Image
         run: |
-       # run: docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-demo:v2
          docker tag config-service ${{ secrets.DOCKER_USERNAME }}/config-service:latest
 
 
