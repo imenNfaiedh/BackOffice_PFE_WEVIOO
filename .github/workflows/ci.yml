@@ -19,20 +19,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Build & run unit tests
+      # Run unit tests (et compile une première fois)
       - name: Run Unit Tests
         run: mvn test
 
-      # Analyse SonarCloud (should run after tests, before install -DskipTests)
+      # Compile seulement (nécessaire pour SonarCloud)
+      - name: Compile Java (generate .class files)
+        run: mvn compile
+
+      # Analyse SonarCloud (doit être après la compilation)
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
-
+        with:
+          organization: imennfaiedh  # ⚠️ attention à bien utiliser le vrai key
+          projectKey: pfeFraud       # ⚠️ idem, vérifie que ce projet existe
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: 'https://sonarcloud.io'
 
-
-      # Build Spring Boot JAR (skip tests, they already ran)
+      # Build Spring Boot JAR (skip tests, déjà exécutés)
       - name: Build Spring Boot JAR
         run: mvn clean install -DskipTests
 
