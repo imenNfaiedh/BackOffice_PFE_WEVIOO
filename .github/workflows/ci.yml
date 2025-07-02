@@ -49,20 +49,21 @@ jobs:
       # Push Docker image to Docker Hub
       - name: Tag and Push Docker Images
         run: |
-          docker tag config-service ${{ secrets.DOCKER_USERNAME }}/config-service:latest
-          docker tag eureka-service ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
-          docker tag gateway-service ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
-          docker tag user-service ${{ secrets.DOCKER_USERNAME }}/user-service:latest
-          docker tag fraud-detection-service ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
-          docker tag notification-service ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
-            
+          docker tag pfamicros-config-service ${{ secrets.DOCKER_USERNAME }}/config-service:latest
+          docker tag pfamicros-eureka-service ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
+          docker tag pfamicros-gateway-service ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
+          docker tag pfamicros-user-service ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+          docker tag pfamicros-fraud-detection-service ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
+          docker tag pfamicros-notification-service ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
+
           docker push ${{ secrets.DOCKER_USERNAME }}/config-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
-
+      
+      
 
       # Upload Artifact for deployment job (using v4)
       - name: Upload Artifact for deployment job
