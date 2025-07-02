@@ -49,11 +49,12 @@ jobs:
       # Push Docker image to Docker Hub
       - name: Tag and Push Docker Images
         run: |
-          docker tag pfamicros-config-service ${{ secrets.DOCKER_USERNAME }}/config-service
+          docker tag pfamicros-config-service ${{ secrets.DOCKER_USERNAME }}/pfamicros-config-service:latest
           
 
-          docker push ${{ secrets.DOCKER_USERNAME }}/config-service
-          
+          docker push ${{ secrets.DOCKER_USERNAME }}/config-service:latest
+        
+     
       
       
 
