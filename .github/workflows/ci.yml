@@ -56,16 +56,7 @@ jobs:
           docker tag backoffice_pfe_wevioo-user-service:latest ${{ secrets.DOCKER_USERNAME }}/user-service:latest
           docker tag backoffice_pfe_wevioo-notification-service:latest ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
                     
-          docker tag backoffice_pfe_wevioo-db:latest ${{ secrets.DOCKER_USERNAME }}/db:latest
-          docker tag backoffice_pfe_wevioo-keycloak:latest ${{ secrets.DOCKER_USERNAME }}/keycloak:latest
-          docker tag backoffice_pfe_wevioo-kafka:latest ${{ secrets.DOCKER_USERNAME }}/kafka:latest
-          docker tag backoffice_pfe_wevioo-zookeeper:latest ${{ secrets.DOCKER_USERNAME }}/zookeeper:latest
-          docker tag backoffice_pfe_wevioo-debezium-connect:latest ${{ secrets.DOCKER_USERNAME }}/debezium-connect:latest
-
-
-
-
-
+         
           docker push ${{ secrets.DOCKER_USERNAME }}/config-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
@@ -73,11 +64,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
           
-          docker push ${{ secrets.DOCKER_USERNAME }}/db:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/keycloak:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/kafka:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/zookeeper:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/debezium-connect:latest
+          
       
       
       
