@@ -48,7 +48,10 @@ jobs:
 
       # Push Docker image to Docker Hub
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-demo:v2
+        run: |
+       # run: docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-demo:v2
+         docker tag config-service ${{ secrets.DOCKER_USERNAME }}/config-service:latest
+
 
       # Upload Artifact for deployment job (using v4)
       - name: Upload Artifact for deployment job
