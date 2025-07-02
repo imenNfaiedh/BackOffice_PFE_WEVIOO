@@ -50,7 +50,20 @@ jobs:
       - name: Tag and Push Docker Images
         run: |
           docker tag backoffice_pfe_wevioo-config-service:latest ${{ secrets.DOCKER_USERNAME }}/config-service:latest
+          docker tag backoffice_pfe_wevioo-eureka-service:latest ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
+          docker tag backoffice_pfe_wevioo-gateway-service:latest ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
+
+          docker tag backoffice_pfe_wevioo-fraud-detection-service:latest ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
+          docker tag backoffice_pfe_wevioo-user-service:latest ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+          docker tag backoffice_pfe_wevioo-notification-service:latest ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
+
+
           docker push ${{ secrets.DOCKER_USERNAME }}/config-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/eureka-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/fraud-detection-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
 
 
 
