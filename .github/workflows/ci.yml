@@ -29,13 +29,15 @@ jobs:
 
       # Analyse SonarCloud (doit être après la compilation)
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          organization: imennfaiedh  # ⚠️ attention à bien utiliser le vrai key
-          projectKey: pfeFraud       # ⚠️ idem, vérifie que ce projet existe
+        run: mvn sonar:sonar \
+            -Dsonar.projectKey=pfeFraud \
+            -Dsonar.organization=imennfaiedh \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.language=java \
+            -Dsonar.sources=config-service/src/main/java \
+            -Dsonar.java.binaries=config-service/target/classes
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: 'https://sonarcloud.io'
 
       # Build Spring Boot JAR (skip tests, déjà exécutés)
       - name: Build Spring Boot JAR
