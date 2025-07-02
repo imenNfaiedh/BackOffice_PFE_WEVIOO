@@ -29,15 +29,10 @@ jobs:
 
       # Analyse SonarCloud (doit être après la compilation)
       - name: SonarCloud Scan
-        run: mvn sonar:sonar \
-            -Dsonar.projectKey=pfeFraud \
-            -Dsonar.organization=imennfaiedh \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.language=java \
-            -Dsonar.sources=config-service/src/main/java \
-            -Dsonar.java.binaries=config-service/target/classes
+        run: mvn sonar:sonar -Dsonar.projectKey=pfeFraud -Dsonar.organization=imennfaiedh -Dsonar.host.url=https://sonarcloud.io -Dsonar.language=java -Dsonar.sources=config-service/src/main/java -Dsonar.java.binaries=config-service/target/classes
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
       # Build Spring Boot JAR (skip tests, déjà exécutés)
       - name: Build Spring Boot JAR
