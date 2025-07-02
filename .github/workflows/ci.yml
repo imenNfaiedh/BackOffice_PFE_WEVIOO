@@ -49,16 +49,15 @@ jobs:
       # Push Docker image to Docker Hub
       - name: Tag and Push Docker Images
         run: |
-          docker tag pfamicros-config-service ${{ secrets.DOCKER_USERNAME }}/pfamicros-config-service:latest
-          
-
+          docker tag backoffice_pfe_wevioo-config-service:latest ${{ secrets.DOCKER_USERNAME }}/config-service:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/config-service:latest
-        
-     
-      
-      
 
-      # Upload Artifact for deployment job (using v4)
+
+
+
+
+
+# Upload Artifact for deployment job (using v4)
       - name: Upload Artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
