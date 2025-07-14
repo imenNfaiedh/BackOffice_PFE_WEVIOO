@@ -49,12 +49,12 @@ public class ProcessService {
             Long transactionId = transactionIdInteger != null ? transactionIdInteger.longValue() : null;
             //get amount & decode du base 16->2
             Object amountRaw = data.get("fds004_amount");
-            BigDecimal amount = decodeDebeziumDecimal(amountRaw);
+          //  BigDecimal amount = decodeDebeziumDecimal(amountRaw);
 
             Transaction transaction = transactionRepository.findById(transactionId)
                     .orElseThrow(() -> new NotFoundException("Transaction not found " + transactionId));
 
-
+            BigDecimal amount = transaction.getAmount();
 
             User user = transaction.getBankAccount().getUser();
             if (user == null) {
@@ -76,6 +76,8 @@ public class ProcessService {
                Date tenMinutesAgo = new Date(System.currentTimeMillis() - 10 * 60 * 1000);
                List<Transaction> recentTransactions = transactionRepository
                        .findByBankAccount_User_UserIdAndTransactionDateAfter(userId, tenMinutesAgo);
+               // ✅ Ajout de la transaction en cours
+               recentTransactions.add(transaction);
 
                if (isHighFrequency(recentTransactions, reasons)) {
                    isFraudulent = true;
@@ -143,6 +145,7 @@ public class ProcessService {
     private boolean isHighAmount(BigDecimal amount, List<String> reasons) {
         if (amount != null && amount.compareTo(BigDecimal.valueOf(3000)) > 0) {
             reasons.add("Montant supérieur à 3000");
+            log.info("Montant supérieur à 3000");
             return true;
         }
 
@@ -153,6 +156,7 @@ public class ProcessService {
     private boolean isHighFrequency(List<Transaction> recentTransactions, List<String> reasons) {
         if (recentTransactions.size() > 5) {
             reasons.add("Trop de transactions en moins de 10 minutes");
+            log.info("Trop de transactions en moins de 10 minutes");
             return true;
         }
         return false;
@@ -163,9 +167,14 @@ public class ProcessService {
         Set<String> countries = recentTransactions.stream()
                 .map(Transaction::getCountry)
                 .collect(Collectors.toSet());
+        log.info("✅ [DEBUG] Pays détectés dans les transactions récentes : {}", countries);
+
 
         if (countries.size() > 1) {
+            log.info("🚨 [FRAUDE] Transactions dans plusieurs pays détectées !");
+
             reasons.add("Transactions dans plusieurs pays sur une courte période");
+            log.info("Transactions dans plusieurs pays sur une courte période");
             return true;
         }
         return false;

@@ -59,12 +59,13 @@ public class KafkaFraudListener {
             model.put("country", country);
             model.put("reason", reason);
 
-            // Envoi de l'e-mail HTML
+            messagingTemplate.convertAndSend("/topic/fraud-alerts", model);
+            log.info("📢 Notification WebSocket envoyée : {}", model);
+
+        //     Envoi de l'e-mail HTML
             String result = emailService.sendHtmlMailWithTemplate(emailDetails, model,"fraud-alert");
             log.info("📬 Résultat de l'envoi de l'e-mail : {}", result);
             // envoyer via websocket
-            messagingTemplate.convertAndSend("/topic/fraud-alerts", model);
-            log.info("📢 Notification WebSocket envoyée : {}", model);
 
 
         } catch (Exception e) {

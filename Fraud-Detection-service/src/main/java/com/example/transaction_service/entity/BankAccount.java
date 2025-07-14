@@ -51,7 +51,7 @@ public class BankAccount implements Serializable {
     private List<BankCard> bankCards;
 
 
-    @OneToMany(mappedBy = "bankAccount")
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
     @ManyToOne

@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,7 +121,7 @@ public class TransactionServiceImpl  implements ITransactionService {
         creditTransaction.setAmount(transactionDto.getAmount());
         creditTransaction.setCurrency(transactionDto.getCurrency());
         creditTransaction.setCountry(transactionDto.getCountry());
-        creditTransaction.setTransactionDate(transactionDto.getTransactionDate());
+        creditTransaction.setTransactionDate( new Date());
         creditTransaction.setBankAccount(receiverAccount);
         creditTransaction.setTransactionStatus(TransactionStatus.VALID);
         creditTransaction.setTypeTransaction(TypeTransaction.CREDIT);

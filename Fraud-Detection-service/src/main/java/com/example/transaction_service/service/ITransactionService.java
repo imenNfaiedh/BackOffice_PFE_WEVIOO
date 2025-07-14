@@ -9,10 +9,10 @@ public interface ITransactionService {
     List<TransactionDto> getAllTransaction();
 
     TransactionDto getTransactionById (Long id);
-    public TransactionDto createTransaction(TransactionDto transactionDto);
+    TransactionDto createTransaction(TransactionDto transactionDto);
     TransactionDto updateTransaction (TransactionDto transactionDto , Long id);
     void deleteTransaction (Long id);
 
-    public List<TransactionDto> getTransactionsForCurrentUser(String keycloakId);
+    List<TransactionDto> getTransactionsForCurrentUser(String keycloakId);
 
 }
